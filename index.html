@@ -1,0 +1,991 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NeuroClick 2026 - Tu Inteligencia Amplificada</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #ffffff;
+            color: #2A2A2D;
+            line-height: 1.6;
+        }
+
+        /* HEADER */
+        header {
+            background: #313155;
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        header .logo {
+            font-family: 'Playfair Display', serif;
+            font-size: 24px;
+            font-weight: 700;
+            color: #584CB5;
+        }
+
+        header .nav {
+            display: flex;
+            gap: 30px;
+            align-items: center;
+        }
+
+        header a {
+            color: #ffffff;
+            text-decoration: none;
+            font-size: 14px;
+            transition: color 0.3s;
+        }
+
+        header a:hover {
+            color: #ED8FA7;
+        }
+
+        /* HERO */
+        .hero {
+            background: linear-gradient(135deg, #313155 0%, #584CB5 100%);
+            padding: 80px 40px;
+            text-align: center;
+            color: #ffffff;
+        }
+
+        .hero h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 52px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            line-height: 1.2;
+        }
+
+        .hero .subtitle {
+            font-size: 22px;
+            color: #ED8FA7;
+            margin-bottom: 30px;
+            font-weight: 500;
+        }
+
+        .hero p {
+            font-size: 18px;
+            max-width: 700px;
+            margin: 0 auto 40px;
+            opacity: 0.95;
+        }
+
+        .cta-button {
+            background: #B31962;
+            color: white;
+            padding: 16px 40px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s, transform 0.2s;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .cta-button:hover {
+            background: #ED8FA7;
+            transform: translateY(-2px);
+        }
+
+        /* CONTAINER */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 60px 40px;
+        }
+
+        /* SECCIÓN: CONTRASTE SIN/CON */
+        .contrast-section {
+            margin-bottom: 80px;
+        }
+
+        .contrast-section h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 40px;
+            text-align: center;
+            margin-bottom: 50px;
+            color: #584CB5;
+        }
+
+        .contrast-table {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+
+        .contrast-card {
+            padding: 40px;
+            border-radius: 12px;
+            border: 2px solid #313155;
+        }
+
+        .contrast-card.without {
+            background: #f5f5f5;
+        }
+
+        .contrast-card.with {
+            background: #f0f4ff;
+            border-color: #584CB5;
+        }
+
+        .contrast-card h3 {
+            font-family: 'Playfair Display', serif;
+            font-size: 24px;
+            margin-bottom: 30px;
+            color: #313155;
+        }
+
+        .contrast-card.with h3 {
+            color: #584CB5;
+        }
+
+        .contrast-list {
+            list-style: none;
+        }
+
+        .contrast-list li {
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(0,0,0,0.1);
+            font-size: 16px;
+        }
+
+        .contrast-list li:last-child {
+            border-bottom: none;
+        }
+
+        /* OBJETIVO */
+        .objective-section {
+            background: #313155;
+            color: white;
+            padding: 60px 40px;
+            margin: 60px -40px;
+            text-align: center;
+        }
+
+        .objective-section h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 36px;
+            margin-bottom: 20px;
+        }
+
+        .objective-section p {
+            font-size: 18px;
+            max-width: 800px;
+            margin: 0 auto;
+            opacity: 0.95;
+        }
+
+        /* TEMARIO */
+        .curriculum-section h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 40px;
+            text-align: center;
+            margin-bottom: 50px;
+            color: #584CB5;
+        }
+
+        .curriculum-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+            margin-bottom: 60px;
+        }
+
+        .curriculum-card {
+            background: #f9f9f9;
+            padding: 30px;
+            border-radius: 12px;
+            border-left: 5px solid #584CB5;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .curriculum-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(88, 76, 181, 0.15);
+        }
+
+        .curriculum-card h3 {
+            font-family: 'Playfair Display', serif;
+            font-size: 20px;
+            color: #584CB5;
+            margin-bottom: 15px;
+        }
+
+        .curriculum-card p {
+            color: #2A2A2D;
+            font-size: 15px;
+            line-height: 1.7;
+        }
+
+        /* SELECTOR DE PROGRAMA */
+        .program-selector {
+            margin: 60px 0;
+            text-align: center;
+        }
+
+        .program-selector h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 40px;
+            margin-bottom: 50px;
+            color: #584CB5;
+        }
+
+        .program-options {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 50px;
+        }
+
+        .program-card {
+            background: #f9f9f9;
+            padding: 40px;
+            border-radius: 12px;
+            border: 2px solid transparent;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .program-card:hover {
+            border-color: #584CB5;
+            background: #f0f4ff;
+        }
+
+        .program-card.active {
+            background: #f0f4ff;
+            border-color: #584CB5;
+            box-shadow: 0 10px 30px rgba(88, 76, 181, 0.2);
+        }
+
+        .program-card h3 {
+            font-family: 'Playfair Display', serif;
+            font-size: 28px;
+            color: #584CB5;
+            margin-bottom: 20px;
+        }
+
+        .program-card ul {
+            list-style: none;
+            text-align: left;
+            font-size: 15px;
+        }
+
+        .program-card li {
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(0,0,0,0.1);
+        }
+
+        .program-card li:before {
+            content: "✓ ";
+            color: #67D98D;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+
+        /* HORARIOS */
+        .schedules-section {
+            display: none;
+            margin: 50px 0;
+            padding: 40px;
+            background: #f0f4ff;
+            border-radius: 12px;
+        }
+
+        .schedules-section.active {
+            display: block;
+        }
+
+        .schedules-section h3 {
+            font-family: 'Playfair Display', serif;
+            font-size: 24px;
+            color: #584CB5;
+            margin-bottom: 30px;
+        }
+
+        .schedule-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .schedule-btn {
+            background: white;
+            border: 2px solid #584CB5;
+            color: #584CB5;
+            padding: 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .schedule-btn:hover:not(:disabled) {
+            background: #584CB5;
+            color: white;
+        }
+
+        .schedule-btn:disabled {
+            background: #e0e0e0;
+            border-color: #999;
+            color: #666;
+            cursor: not-allowed;
+        }
+
+        .schedule-btn.selected {
+            background: #584CB5;
+            color: white;
+        }
+
+        /* PRICING */
+        .pricing-section {
+            text-align: center;
+            padding: 60px 0;
+            border-top: 2px solid #e0e0e0;
+            border-bottom: 2px solid #e0e0e0;
+            margin: 60px 0;
+        }
+
+        .pricing-section h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 40px;
+            margin-bottom: 20px;
+            color: #584CB5;
+        }
+
+        .price-display {
+            font-size: 48px;
+            font-weight: 700;
+            color: #B31962;
+            margin: 20px 0;
+        }
+
+        .price-label {
+            font-size: 16px;
+            color: #67D98D;
+            font-weight: 600;
+            margin-bottom: 30px;
+        }
+
+        /* PAYMENT METHODS */
+        .payment-methods {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 40px;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .payment-btn {
+            padding: 16px 30px;
+            border: 2px solid #584CB5;
+            background: white;
+            color: #584CB5;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-family: 'Inter', sans-serif;
+            font-size: 16px;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .payment-btn:hover {
+            background: #584CB5;
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        /* FORM MODAL */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+        }
+
+        .modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background-color: white;
+            padding: 40px;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 500px;
+            position: relative;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .close-modal {
+            position: absolute;
+            right: 20px;
+            top: 20px;
+            font-size: 28px;
+            cursor: pointer;
+            color: #999;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #584CB5;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-family: 'Inter', sans-serif;
+            font-size: 14px;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #584CB5;
+            box-shadow: 0 0 0 3px rgba(88, 76, 181, 0.1);
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 14px;
+            background: #B31962;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            font-size: 16px;
+        }
+
+        .submit-btn:hover {
+            background: #ED8FA7;
+        }
+
+        /* FOOTER */
+        footer {
+            background: #313155;
+            color: white;
+            padding: 40px;
+            text-align: center;
+            margin-top: 60px;
+        }
+
+        footer p {
+            font-size: 14px;
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 36px;
+            }
+
+            .contrast-table,
+            .program-options {
+                grid-template-columns: 1fr;
+            }
+
+            .schedule-grid {
+                grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            }
+
+            header {
+                flex-direction: column;
+                gap: 20px;
+            }
+
+            header .nav {
+                flex-direction: column;
+                gap: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="logo">NeuroClick™</div>
+    <nav class="nav">
+        <a href="#program">Programa</a>
+        <a href="#pricing">Inversión</a>
+        <a href="#contact" onclick="scrollToContact()">Contacto</a>
+    </nav>
+</header>
+
+<div class="hero">
+    <h1>La IA No Reemplaza Tu Inteligencia.<br>La Amplifica.</h1>
+    <p class="subtitle">Pero solo si sabes cómo pedirle.</p>
+    <p>Cada conversación que tienes con una IA es un acto de liderazgo. <br>Cuando hablas con claridad, con intención, con consciencia — obtienes resultados extraordinarios.<br><br>NeuroClick te enseña el arte y la ciencia de conversar con inteligencia artificial.<br>No es magia. Es discernimiento.</p>
+    <button class="cta-button" onclick="scrollToProgram()">Descubre Cómo</button>
+</div>
+
+<div class="container">
+    
+    <!-- CONTRASTE -->
+    <section class="contrast-section">
+        <h2>Sin NeuroClick vs Con NeuroClick</h2>
+        <div class="contrast-table">
+            <div class="contrast-card without">
+                <h3>Sin NeuroClick</h3>
+                <ul class="contrast-list">
+                    <li>Trabajas entusiasmado</li>
+                    <li>IA se bloquea: "Límite excedido"</li>
+                    <li>Esperas 5 horas</li>
+                    <li>Comienzas de nuevo</li>
+                    <li>Frustración</li>
+                </ul>
+            </div>
+            <div class="contrast-card with">
+                <h3>Con NeuroClick</h3>
+                <ul class="contrast-list">
+                    <li>Comunicas efectivamente</li>
+                    <li>IA entiende perfectamente</li>
+                    <li>Resultados rápido</li>
+                    <li>Productivo siempre</li>
+                    <li>Flujo constante</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <!-- OBJETIVO -->
+    <section class="objective-section">
+        <h2>¿Qué Lograrás Realmente?</h2>
+        <p>No solo aprenderás a usar IA. Aprenderás a PENSAR con IA.<br>Comunica con claridad. Lidera con consciencia. Transforma tu productividad en impacto.<br><br><strong>Más tiempo para lo importante. Menos tiempo en lo mecánico.</strong><br><strong>Menos fricción. Más flujo. Más propósito.</strong></p>
+    </section>
+
+    <!-- TEMARIO -->
+    <section class="curriculum-section" id="program">
+        <h2>Tu Aprendizaje en 6 Pasos</h2>
+        <div class="curriculum-grid">
+            <div class="curriculum-card">
+                <h3>Clase 0</h3>
+                <p><strong>Diagnóstico (GRATIS)</strong><br>Descubrimos tu necesidad exacta. Demo en vivo. Impacto inmediato. Sin compromiso.</p>
+            </div>
+            <div class="curriculum-card">
+                <h3>Clase 1</h3>
+                <p><strong>Prompts que Funcionan</strong><br><strong>Procedimiento:</strong> Aprende la fórmula de 4 pasos. Crea 5 prompts desde cero. Evita las 3 trampas que bloquean la IA.</p>
+            </div>
+            <div class="curriculum-card">
+                <h3>Clase 2</h3>
+                <p><strong>Las 4 Herramientas Maestras</strong><br><strong>Procedimiento:</strong> Cuándo usar ChatGPT, Claude, Perplexity, Gemini. Qué hace cada una mejor. Cómo elegir según tu tarea (+ checklist descargable).</p>
+            </div>
+            <div class="curriculum-card">
+                <h3>Clase 3</h3>
+                <p><strong>Pedir Con Consciencia</strong><br><strong>Procedimiento:</strong> La anatomía de un prompt poderoso. Cómo formular preguntas que despiertan la verdadera inteligencia. Ejercicios prácticos de refinamiento.</p>
+            </div>
+            <div class="curriculum-card">
+                <h3>Clase 4</h3>
+                <p><strong>Discernimiento en IA: Qué Herramienta Para Qué</strong><br><strong>Procedimiento:</strong> Mapeo visual. Cuándo Suno, Lumen5, Gamma, Gemini, editores de video IA. Decisiones estratégicas para máximo impacto.</p>
+            </div>
+            <div class="curriculum-card">
+                <h3>BONUS</h3>
+                <p><strong>Niveles Avanzados (Opcional)</strong><br>Cursos profundos: Suno Mastery, Lumen5 para Reels, Gamma para Pitch Decks, Gemini Ecosistema Completo, Edición de Video IA.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- SELECTOR DE PROGRAMA -->
+    <section class="program-selector">
+        <h2>Elige Tu Formato</h2>
+        <div class="program-options">
+            <div class="program-card active" onclick="selectProgram('sincronico')">
+                <h3>Síncrono</h3>
+                <ul>
+                    <li>5 encuentros 1:1 en vivo</li>
+                    <li>90 minutos por clase</li>
+                    <li>Horarios México</li>
+                    <li>Clase 0 GRATIS</li>
+                    <li>Ada + Maestra Asistente</li>
+                </ul>
+            </div>
+            <div class="program-card" onclick="selectProgram('asincronico')">
+                <h3>Asincrónico</h3>
+                <ul>
+                    <li>4 clases grabadas personalizadas</li>
+                    <li>Ritmo propio</li>
+                    <li>3 meses de acceso</li>
+                    <li>2 asesorías incluidas</li>
+                    <li>Prácticas especiales</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- HORARIOS SÍNCRONO -->
+        <div id="syncSchedules" class="schedules-section active">
+            <h3>Selecciona Tu Horario (México)</h3>
+            <div class="schedule-grid">
+                <button class="schedule-btn" onclick="selectSchedule(this, 'martes-17:00')">Mar 5:00 PM</button>
+                <button class="schedule-btn" onclick="selectSchedule(this, 'martes-18:00')">Mar 6:00 PM</button>
+                <button class="schedule-btn" onclick="selectSchedule(this, 'martes-19:00')">Mar 7:00 PM</button>
+                <button class="schedule-btn" onclick="selectSchedule(this, 'miercoles-09:00')">Mié 9:00 AM</button>
+                <button class="schedule-btn" onclick="selectSchedule(this, 'miercoles-11:00')">Mié 11:00 AM</button>
+                <button class="schedule-btn" onclick="selectSchedule(this, 'miercoles-19:00')">Mié 7:00 PM</button>
+                <button class="schedule-btn" onclick="selectSchedule(this, 'jueves-17:00')">Jue 5:00 PM</button>
+                <button class="schedule-btn" onclick="selectSchedule(this, 'jueves-18:00')">Jue 6:00 PM</button>
+                <button class="schedule-btn" onclick="selectSchedule(this, 'jueves-19:00')">Jue 7:00 PM</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- CÓMO FUNCIONA -->
+    <section style="padding: 60px 40px; background: white; margin: 60px -40px;">
+        <div class="container">
+            <h2 style="font-family: 'Playfair Display', serif; font-size: 40px; text-align: center; color: #584CB5; margin-bottom: 50px;">Cómo Funciona NeuroClick</h2>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 30px; margin-bottom: 50px;">
+                <!-- PASO 1 -->
+                <div style="text-align: center;">
+                    <div style="background: #584CB5; color: white; width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 28px; margin: 0 auto 20px;">1</div>
+                    <h3 style="color: #584CB5; margin-bottom: 15px; font-size: 18px;">Elige Tu Formato</h3>
+                    <p style="color: #666; font-size: 15px;">Selecciona Síncrono (clases en vivo) o Asincrónico (a tu ritmo). Registra tus datos.</p>
+                </div>
+
+                <!-- PASO 2 -->
+                <div style="text-align: center;">
+                    <div style="background: #B31962; color: white; width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 28px; margin: 0 auto 20px;">2</div>
+                    <h3 style="color: #B31962; margin-bottom: 15px; font-size: 18px;">Realiza El Pago</h3>
+                    <p style="color: #666; font-size: 15px;">Elige PayPal, Wise o DolarApp. Transacción segura y rápida. $150 USD.</p>
+                </div>
+
+                <!-- PASO 3 -->
+                <div style="text-align: center;">
+                    <div style="background: #67D98D; color: white; width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 28px; margin: 0 auto 20px;">3</div>
+                    <h3 style="color: #67D98D; margin-bottom: 15px; font-size: 18px;">Accede Inmediatamente</h3>
+                    <p style="color: #666; font-size: 15px;">Recibes tu Dashboard personal. Ve tus clases, descarga materiales, sigue tu progreso.</p>
+                </div>
+
+                <!-- PASO 4 -->
+                <div style="text-align: center;">
+                    <div style="background: #F7B955; color: white; width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 28px; margin: 0 auto 20px;">4</div>
+                    <h3 style="color: #F7B955; margin-bottom: 15px; font-size: 18px;">Vive Tu Clase 0</h3>
+                    <p style="color: #666; font-size: 15px;">Diagnóstico en vivo con Ada. Identificamos tu necesidad exacta. Demo de impacto inmediato.</p>
+                </div>
+
+                <!-- PASO 5 -->
+                <div style="text-align: center;">
+                    <div style="background: #584CB5; color: white; width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 28px; margin: 0 auto 20px;">5</div>
+                    <h3 style="color: #584CB5; margin-bottom: 15px; font-size: 18px;">Aprende Paso a Paso</h3>
+                    <p style="color: #666; font-size: 15px;">Clases grabadas personalizadas. Ejercicios prácticos. Cuaderno personalizado. Tu ritmo, tu tiempo.</p>
+                </div>
+
+                <!-- PASO 6 -->
+                <div style="text-align: center;">
+                    <div style="background: #B31962; color: white; width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 28px; margin: 0 auto 20px;">6</div>
+                    <h3 style="color: #B31962; margin-bottom: 15px; font-size: 18px;">Obtén Tu Certificado</h3>
+                    <p style="color: #666; font-size: 15px;">Completa todas las clases. Recibe tu certificado de NeuroClick. Demuestra tu maestría.</p>
+                </div>
+            </div>
+
+            <!-- INFO ADICIONAL -->
+            <div style="background: #f0f4ff; padding: 30px; border-radius: 12px; border-left: 4px solid #584CB5; margin-top: 40px;">
+                <h3 style="color: #584CB5; margin-bottom: 15px; font-size: 18px;">Lo Que Incluye Tu Acceso</h3>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; font-size: 15px; color: #666;">
+                    <p>✓ 4 Clases grabadas personalizadas (+ Clase 0 GRATIS)</p>
+                    <p>✓ Dashboard privado con videos y ejercicios</p>
+                    <p>✓ Cuaderno personalizado (PDF descargable)</p>
+                    <p>✓ Certificado de completación</p>
+                    <p>✓ 3 meses de acceso (Asincrónico) o 5 encuentros (Síncrono)</p>
+                    <p>✓ 2 asesorías incluidas (respuesta en 24-48h)</p>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section class="pricing-section" id="pricing">
+        <h2>Tu Inversión</h2>
+        <div class="price-display">$150 USD</div>
+        <div class="price-label">Oferta de lanzamiento.</div>
+        <p style="font-size: 16px; margin-bottom: 40px;">Acceso completo a todas las clases, materiales y certificado.</p>
+        <div class="payment-methods">
+            <a href="/auth.html" class="payment-btn">PayPal</a>
+            <a href="/auth.html" class="payment-btn">Wise</a>
+            <a href="/auth.html" class="payment-btn">DolarApp</a>
+        </div>
+    </section>
+
+</div>
+
+<!-- MODAL DE REGISTRO MEJORADO -->
+<div id="checkoutModal" class="modal">
+    <div class="modal-content">
+        <span class="close-modal" onclick="closeCheckout()">&times;</span>
+        <h2 style="font-family: 'Playfair Display', serif; color: #584CB5; margin-bottom: 10px; text-align: center;">Tu Próximo Paso</h2>
+        <p style="text-align: center; color: #666; margin-bottom: 30px; font-size: 14px;">Completa tu registro para acceder a NeuroClick 2026</p>
+        
+        <!-- RESUMEN DE LO ELEGIDO -->
+        <div style="background: #f0f4ff; padding: 20px; border-radius: 10px; margin-bottom: 30px; border-left: 4px solid #584CB5;">
+            <h3 style="color: #584CB5; margin-bottom: 15px; font-size: 16px;">Lo que elegiste:</h3>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                <div>
+                    <p style="color: #999; font-size: 12px; margin-bottom: 5px;">PROGRAMA</p>
+                    <p style="color: #2A2A2D; font-weight: 600; font-size: 16px;" id="resumenPrograma">Síncrono</p>
+                </div>
+                <div id="resumenHorarioContainer" style="display: none;">
+                    <p style="color: #999; font-size: 12px; margin-bottom: 5px;">HORARIO</p>
+                    <p style="color: #2A2A2D; font-weight: 600; font-size: 16px;" id="resumenHorario">—</p>
+                </div>
+                <div style="grid-column: 1/-1;">
+                    <p style="color: #999; font-size: 12px; margin-bottom: 5px;">INVERSIÓN</p>
+                    <p style="color: #B31962; font-weight: 700; font-size: 18px;">$150 USD</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- FORMULARIO -->
+        <form onsubmit="handleRegistration(event)">
+            <div class="form-group">
+                <label>Tu nombre completo *</label>
+                <input type="text" id="nombre" placeholder="¿Cómo te llamas?" required>
+            </div>
+
+            <div class="form-group">
+                <label>Email *</label>
+                <input type="email" id="email" placeholder="tu@email.com" required>
+            </div>
+
+            <div class="form-group">
+                <label>Teléfono (opcional)</label>
+                <input type="tel" id="telefono" placeholder="+34 600 000 000">
+            </div>
+
+            <div class="form-group">
+                <label>¿Cómo te enteraste de NeuroClick? *</label>
+                <select id="referencia" required style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px; font-family: 'Inter', sans-serif; font-size: 14px;">
+                    <option value="">Selecciona...</option>
+                    <option value="redes_sociales">Redes Sociales</option>
+                    <option value="recomendacion">Recomendación de Amigo</option>
+                    <option value="busqueda">Búsqueda en Google</option>
+                    <option value="email">Email/Newsletter</option>
+                    <option value="otro">Otro</option>
+                </select>
+            </div>
+
+            <div class="form-group" id="diagnosticoGroup" style="display: none;">
+                <label>Tu necesidad principal con IA *</label>
+                <textarea id="diagnostico" placeholder="Cuéntanos qué buscas aprender..." style="min-height: 100px;"></textarea>
+            </div>
+
+            <!-- INFO BOX -->
+            <div style="background: #fff9e6; padding: 15px; border-radius: 8px; border-left: 4px solid #F7B955; margin-bottom: 20px;">
+                <p style="color: #666; font-size: 13px; margin: 0;">
+                    <strong>✓ Sin compromisos ocultos</strong><br>
+                    Tu información es privada y confidencial. Recibirás acceso completo a NeuroClick inmediatamente después del pago.
+                </p>
+            </div>
+
+            <button type="submit" class="submit-btn" style="margin-bottom: 15px;">Continuar al Pago</button>
+        </form>
+
+        <p style="font-size: 11px; color: #999; text-align: center; margin: 0;">
+            Al continuar, aceptas nuestros términos de servicio
+        </p>
+    </div>
+</div>
+
+<footer>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 30px; margin-bottom: 40px;">
+        <div>
+            <h3 style="color: #584CB5; margin-bottom: 15px; font-size: 16px;">NeuroClick™</h3>
+            <p style="font-size: 14px; color: #666;">Tu inteligencia amplificada. El líder eres tú. Las IAs te apoyan.</p>
+        </div>
+        <div>
+            <h3 style="color: #584CB5; margin-bottom: 15px; font-size: 16px;">Contacto</h3>
+            <p style="font-size: 14px;"><a href="https://wa.link/neuroclick" target="_blank" style="color: #584CB5; text-decoration: none; font-weight: 600;">💬 Escríbeme por WhatsApp</a></p>
+            <p style="font-size: 14px; color: #666;">neuroclick@liderazgoespiritual.com</p>
+        </div>
+        <div>
+            <h3 style="color: #584CB5; margin-bottom: 15px; font-size: 16px;">Marca Madre</h3>
+            <p style="font-size: 14px;"><a href="https://liderazgoespiritual.com" target="_blank" style="color: #584CB5; text-decoration: none; font-weight: 600;">Escuela de Liderazgo Espiritual</a></p>
+        </div>
+    </div>
+    <p style="font-size: 13px; color: #999; border-top: 1px solid #e0e0e0; padding-top: 20px;">&copy; 2026 Ada Demitropulos | NeuroClick™ - Inteligencia Amplificada para Líderes Conscientes</p>
+</footer>
+
+<script>
+    // SUPABASE CONFIG
+    const SUPABASE_URL = 'https://eoceqdgeptdevudoniuk.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVvY2VxZGdlcHRkZXZ1ZG9uaXVrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk0NTkyMDksImV4cCI6MjA5NTAzNTIwOX0.8qKGJfLzZUydzWuG-n78_8Rs9X1ZHkzBkhV98vtCdtM';
+
+    let selectedProgram = 'sincronico';
+    let selectedSchedule = null;
+    let selectedPaymentMethod = null;
+
+    function selectProgram(program) {
+        selectedProgram = program;
+        
+        document.querySelectorAll('.program-card').forEach(card => {
+            card.classList.remove('active');
+        });
+        event.target.closest('.program-card').classList.add('active');
+
+        const syncSchedules = document.getElementById('syncSchedules');
+        if (program === 'sincronico') {
+            syncSchedules.classList.add('active');
+        } else {
+            syncSchedules.classList.remove('active');
+        }
+
+        document.getElementById('programa').value = program === 'sincronico' ? 'Síncrono' : 'Asincrónico';
+        document.getElementById('scheduleGroup').style.display = program === 'sincronico' ? 'block' : 'none';
+        document.getElementById('diagnosticoGroup').style.display = program === 'asincronico' ? 'block' : 'none';
+    }
+
+    function selectSchedule(button, schedule) {
+        document.querySelectorAll('.schedule-btn').forEach(btn => {
+            btn.classList.remove('selected');
+        });
+        button.classList.add('selected');
+        selectedSchedule = schedule;
+        document.getElementById('horario').value = schedule;
+    }
+
+    function openCheckout(method) {
+        selectedPaymentMethod = method;
+        
+        // Actualizar resumen en modal
+        document.getElementById('resumenPrograma').textContent = selectedProgram === 'sincronico' ? 'Síncrono' : 'Asincrónico';
+        
+        if (selectedProgram === 'sincronico') {
+            document.getElementById('resumenHorarioContainer').style.display = 'block';
+            document.getElementById('resumenHorario').textContent = selectedSchedule || 'Selecciona un horario';
+            document.getElementById('diagnosticoGroup').style.display = 'none';
+        } else {
+            document.getElementById('resumenHorarioContainer').style.display = 'none';
+            document.getElementById('diagnosticoGroup').style.display = 'block';
+        }
+        
+        // Mostrar modal
+        document.getElementById('checkoutModal').classList.add('active');
+    }
+
+    function closeCheckout() {
+        document.getElementById('checkoutModal').classList.remove('active');
+    }
+
+    async function handleRegistration(e) {
+        e.preventDefault();
+
+        const nombre = document.getElementById('nombre').value;
+        const email = document.getElementById('email').value;
+        const telefono = document.getElementById('telefono').value;
+        const referencia = document.getElementById('referencia').value;
+        const programa = selectedProgram;
+        const horario = selectedSchedule;
+        const diagnostico = document.getElementById('diagnostico').value;
+
+        // Validaciones
+        if (programa === 'sincronico' && !horario) {
+            alert('Por favor selecciona un horario.');
+            return;
+        }
+
+        if (!selectedPaymentMethod) {
+            alert('Por favor selecciona un método de pago.');
+            return;
+        }
+
+        try {
+            // GUARDAR EN SUPABASE
+            const response = await fetch(`${SUPABASE_URL}/rest/v1/estudiantes`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'apikey': SUPABASE_ANON_KEY,
+                    'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+                },
+                body: JSON.stringify({
+                    nombre: nombre,
+                    email: email,
+                    telefono: telefono || null,
+                    referencia: referencia,
+                    tipo_programa: programa,
+                    horario: horario || null,
+                    diagnostico: diagnostico || null,
+                    pagado: false,
+                    estado: 'pendiente_contenido'
+                })
+            });
+
+            if (!response.ok) {
+                throw new Error('Error al guardar registro');
+            }
+
+            // REDIRIGIR A PAGO
+            let paymentUrl = '';
+
+            if (selectedPaymentMethod === 'paypal') {
+                paymentUrl = 'https://paypal.me/elmilagroerestu?locale.x=es_XC&country.x=AR';
+            } else if (selectedPaymentMethod === 'wise') {
+                paymentUrl = 'https://wise.com/pay/me/adaelisd';
+            } else if (selectedPaymentMethod === 'dolarapp') {
+                alert(`¡Gracias ${nombre}!\n\nPara pagar con DolarApp y acceder a múltiples monedas (pesos mexicanos, euros, etc.), por favor contacta a:\n\nneuroclick@liderazgoespiritual.com\n\nComparte este email: ${email}\n\nTe enviaremos los detalles de pago según tu moneda.`);
+                closeCheckout();
+                return;
+            }
+
+            // Redirigir a pago
+            window.location.href = paymentUrl;
+
+        } catch (error) {
+            console.error('Error:', error);
+            alert('Ocurrió un error al guardar tu registro. Por favor intenta de nuevo o contacta a neuroclick@liderazgoespiritual.com');
+        }
+    }
+
+    function scrollToProgram() {
+        document.getElementById('program').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function scrollToContact() {
+        alert('Contacto: ada@liderazgoespiritual.com');
+    }
+
+    // Cerrar modal al hacer click fuera
+    window.onclick = function(event) {
+        const modal = document.getElementById('checkoutModal');
+        if (event.target === modal) {
+            modal.classList.remove('active');
+        }
+    }
+</script>
+
+</body>
+</html>

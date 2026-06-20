@@ -1,0 +1,815 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NeuroClick - Mi Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f5f5f5;
+            color: #2A2A2D;
+        }
+
+        /* HEADER */
+        header {
+            background: #313155;
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: white;
+        }
+
+        header .logo {
+            font-family: 'Playfair Display', serif;
+            font-size: 24px;
+            font-weight: 700;
+            color: #584CB5;
+        }
+
+        header .user-info {
+            text-align: right;
+        }
+
+        header .user-name {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        header .logout {
+            color: #ED8FA7;
+            cursor: pointer;
+            font-size: 14px;
+            text-decoration: underline;
+        }
+
+        /* SIDEBAR */
+        .dashboard-container {
+            display: grid;
+            grid-template-columns: 250px 1fr;
+            gap: 0;
+            min-height: calc(100vh - 70px);
+        }
+
+        .sidebar {
+            background: #313155;
+            padding: 30px 0;
+            color: white;
+        }
+
+        .sidebar-menu {
+            list-style: none;
+        }
+
+        .sidebar-menu li {
+            padding: 0;
+        }
+
+        .sidebar-menu a {
+            display: block;
+            padding: 15px 30px;
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            border-left: 4px solid transparent;
+            transition: all 0.3s;
+            font-weight: 500;
+        }
+
+        .sidebar-menu a:hover,
+        .sidebar-menu a.active {
+            background: rgba(88, 76, 181, 0.2);
+            color: #ED8FA7;
+            border-left-color: #ED8FA7;
+        }
+
+        /* MAIN CONTENT */
+        .main-content {
+            padding: 40px;
+            background: #f5f5f5;
+            overflow-y: auto;
+        }
+
+        .section {
+            display: none;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        /* WELCOME SECTION */
+        .welcome-box {
+            background: linear-gradient(135deg, #584CB5 0%, #B31962 100%);
+            color: white;
+            padding: 50px 40px;
+            border-radius: 12px;
+            margin-bottom: 40px;
+            text-align: center;
+        }
+
+        .welcome-box h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 42px;
+            margin-bottom: 15px;
+        }
+
+        .welcome-box p {
+            font-size: 18px;
+            opacity: 0.95;
+            margin-bottom: 30px;
+        }
+
+        /* PROGRESS BAR */
+        .progress-section {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            margin-bottom: 40px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .progress-section h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 24px;
+            color: #584CB5;
+            margin-bottom: 20px;
+        }
+
+        .progress-bar {
+            background: #e0e0e0;
+            height: 20px;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 15px;
+        }
+
+        .progress-fill {
+            background: linear-gradient(90deg, #584CB5, #B31962);
+            height: 100%;
+            width: 0%;
+            transition: width 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding-right: 10px;
+            color: white;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .progress-text {
+            font-size: 14px;
+            color: #666;
+        }
+
+        /* CLASSES GRID */
+        .classes-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+
+        .class-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .class-card:hover:not(.locked) {
+            transform: translateY(-8px);
+            box-shadow: 0 8px 25px rgba(88, 76, 181, 0.2);
+        }
+
+        .class-card.locked {
+            opacity: 0.6;
+        }
+
+        .class-header {
+            background: linear-gradient(135deg, #584CB5 0%, #B31962 100%);
+            padding: 25px;
+            color: white;
+            text-align: center;
+        }
+
+        .class-header h3 {
+            font-family: 'Playfair Display', serif;
+            font-size: 28px;
+            margin-bottom: 5px;
+        }
+
+        .class-header p {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .class-content {
+            padding: 25px;
+        }
+
+        .class-content p {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+
+        .class-resources {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .resource-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 12px 16px;
+            background: #f0f4ff;
+            border: 2px solid #584CB5;
+            color: #584CB5;
+            border-radius: 6px;
+            text-decoration: none;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.3s;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .resource-btn:hover:not(:disabled) {
+            background: #584CB5;
+            color: white;
+        }
+
+        .resource-btn:disabled,
+        .class-card.locked .resource-btn {
+            background: #e0e0e0;
+            border-color: #999;
+            color: #666;
+            cursor: not-allowed;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 6px 12px;
+            background: #67D98D;
+            color: white;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+
+        .status-badge.locked {
+            background: #999;
+        }
+
+        .status-badge.pending {
+            background: #F7B955;
+        }
+
+        /* MATERIALS SECTION */
+        .materials-section {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            margin-bottom: 40px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .materials-section h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 28px;
+            color: #584CB5;
+            margin-bottom: 25px;
+        }
+
+        .material-item {
+            padding: 20px;
+            background: #f9f9f9;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .material-item h3 {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .material-item p {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .material-item a {
+            background: #B31962;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: background 0.3s;
+        }
+
+        .material-item a:hover {
+            background: #ED8FA7;
+        }
+
+        /* EMPTY STATE */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            background: white;
+            border-radius: 12px;
+            color: #999;
+        }
+
+        .empty-state p {
+            font-size: 18px;
+            margin-bottom: 20px;
+        }
+
+        /* FOOTER */
+        footer {
+            background: white;
+            padding: 30px 40px;
+            text-align: center;
+            border-top: 1px solid #e0e0e0;
+            font-size: 14px;
+            color: #666;
+            margin-top: auto;
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 768px) {
+            .dashboard-container {
+                grid-template-columns: 1fr;
+            }
+
+            .sidebar {
+                display: flex;
+                overflow-x: auto;
+                padding: 10px 0;
+            }
+
+            .sidebar-menu {
+                display: flex;
+                gap: 0;
+            }
+
+            .sidebar-menu li {
+                flex-shrink: 0;
+            }
+
+            .sidebar-menu a {
+                padding: 10px 15px;
+                white-space: nowrap;
+                border-left: none;
+                border-bottom: 3px solid transparent;
+            }
+
+            .sidebar-menu a.active {
+                border-left: none;
+                border-bottom-color: #ED8FA7;
+            }
+
+            .classes-grid {
+                grid-template-columns: 1fr;
+            }
+
+            header {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .welcome-box h1 {
+                font-size: 28px;
+            }
+
+            .material-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="logo">NeuroClick™</div>
+    <div class="user-info">
+        <div class="user-name" id="userName">Estudiante</div>
+        <span class="logout" onclick="logout()">Cerrar sesión</span>
+    </div>
+</header>
+
+<div class="dashboard-container">
+    
+    <aside class="sidebar">
+        <ul class="sidebar-menu">
+            <li><a href="#" onclick="switchSection('welcome', event)" class="active">Inicio</a></li>
+            <li><a href="#" onclick="switchSection('clases', event)">Mis Clases</a></li>
+            <li><a href="#" onclick="switchSection('materiales', event)">Cuaderno</a></li>
+            <li><a href="#" onclick="switchSection('certificado', event)">Certificado</a></li>
+        </ul>
+    </aside>
+
+    <main class="main-content">
+
+        <!-- SECTION: WELCOME -->
+        <section class="section active" id="welcome">
+            <div class="welcome-box">
+                <h1>Bienvenido a NeuroClick</h1>
+                <p>Tu viaje para dominar inteligencia artificial comienza aquí.</p>
+                <p style="font-size: 16px; opacity: 0.8;">Sigue las clases en orden. Completa los ejercicios. Transforma tu relación con la IA.</p>
+            </div>
+
+            <div class="progress-section">
+                <h2>Tu Progreso</h2>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill" style="width: 0%;">0%</div>
+                </div>
+                <p class="progress-text"><span id="completedClasses">0</span> de 4 clases completadas</p>
+            </div>
+
+            <div style="background: white; padding: 30px; border-radius: 12px; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);">
+                <h2 style="font-family: 'Playfair Display', serif; color: #584CB5; margin-bottom: 20px; font-size: 24px;">¿Cómo funciona?</h2>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 25px;">
+                    <div>
+                        <div style="background: #584CB5; color: white; width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 24px; margin-bottom: 15px;">1</div>
+                        <h3 style="color: #584CB5; margin-bottom: 10px;">Mira el Video</h3>
+                        <p style="color: #666; font-size: 14px;">Accede a la clase grabada personalizada para ti.</p>
+                    </div>
+                    <div>
+                        <div style="background: #B31962; color: white; width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 24px; margin-bottom: 15px;">2</div>
+                        <h3 style="color: #B31962; margin-bottom: 10px;">Descarga el Ejercicio</h3>
+                        <p style="color: #666; font-size: 14px;">Práctica personalizada diseñada para tu nivel.</p>
+                    </div>
+                    <div>
+                        <div style="background: #67D98D; color: white; width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 24px; margin-bottom: 15px;">3</div>
+                        <h3 style="color: #67D98D; margin-bottom: 10px;">Obtén Tu Certificado</h3>
+                        <p style="color: #666; font-size: 14px;">Completa todas las clases y recibe tu acreditación.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION: CLASES -->
+        <section class="section" id="clases">
+            <h1 style="font-family: 'Playfair Display', serif; color: #584CB5; margin-bottom: 30px; font-size: 36px;">Mis Clases</h1>
+
+            <div class="classes-grid">
+                <!-- CLASE 0 (DEMO) -->
+                <div class="class-card">
+                    <div class="class-header">
+                        <h3>Clase 0</h3>
+                        <p>Diagnóstico (GRATIS)</p>
+                    </div>
+                    <div class="class-content">
+                        <span class="status-badge">Completa</span>
+                        <p>Tu necesidad exacta. Demo en vivo. Impacto inmediato.</p>
+                        <div class="class-resources">
+                            <a href="#" class="resource-btn">📹 Ver Grabación</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CLASE 1 -->
+                <div class="class-card" id="clase1">
+                    <div class="class-header">
+                        <h3>Clase 1</h3>
+                        <p>Prompts que Funcionan</p>
+                    </div>
+                    <div class="class-content">
+                        <span class="status-badge pending">Próximamente</span>
+                        <p>Fórmula base. DO's y DON'Ts. Evita alucinaciones. Optimiza resultados y tiempo.</p>
+                        <div class="class-resources">
+                            <a href="#" class="resource-btn" id="video1" disabled>📹 Video</a>
+                            <a href="#" class="resource-btn" id="ejercicio1" disabled>📄 Ejercicio</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CLASE 2 -->
+                <div class="class-card locked" id="clase2">
+                    <div class="class-header">
+                        <h3>Clase 2</h3>
+                        <p>Las 4 Herramientas</p>
+                    </div>
+                    <div class="class-content">
+                        <span class="status-badge locked">Bloqueada</span>
+                        <p>ChatGPT, Claude, Perplexity, Gemini. Cuándo cada una. Limitaciones reales.</p>
+                        <div class="class-resources">
+                            <a href="#" class="resource-btn" disabled>📹 Video</a>
+                            <a href="#" class="resource-btn" disabled>📄 Ejercicio</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CLASE 3 -->
+                <div class="class-card locked" id="clase3">
+                    <div class="class-header">
+                        <h3>Clase 3</h3>
+                        <p>Ecosystem Gemini</p>
+                    </div>
+                    <div class="class-content">
+                        <span class="status-badge locked">Bloqueada</span>
+                        <p>Gems + Notebook. Asistentes personales permanentes. Generador de imágenes.</p>
+                        <div class="class-resources">
+                            <a href="#" class="resource-btn" disabled>📹 Video</a>
+                            <a href="#" class="resource-btn" disabled>📄 Ejercicio</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CLASE 4 -->
+                <div class="class-card locked" id="clase4">
+                    <div class="class-header">
+                        <h3>Clase 4</h3>
+                        <p>Proyectos + Plan 30 Días</p>
+                    </div>
+                    <div class="class-content">
+                        <span class="status-badge locked">Bloqueada</span>
+                        <p>Crea proyectos. Personaliza tu IA. Tu ruta de trabajo ejecutable.</p>
+                        <div class="class-resources">
+                            <a href="#" class="resource-btn" disabled>📹 Video</a>
+                            <a href="#" class="resource-btn" disabled>📄 Ejercicio</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION: MATERIALES -->
+        <section class="section" id="materiales">
+            <h1 style="font-family: 'Playfair Display', serif; color: #584CB5; margin-bottom: 30px; font-size: 36px;">Tu Cuaderno Personalizado</h1>
+
+            <div class="materials-section">
+                <h2>Documentos</h2>
+                
+                <div class="material-item">
+                    <div>
+                        <h3>Cuaderno NeuroClick Personalizado</h3>
+                        <p>Tu manual personal creado a partir de tu proceso de aprendizaje.</p>
+                    </div>
+                    <a href="#" id="cuadernoLink" target="_blank">Descargar PDF</a>
+                </div>
+
+                <div class="material-item">
+                    <div>
+                        <h3>Guía de Referencia Rápida</h3>
+                        <p>Todos los prompts, fórmulas y shortcuts en un documento.</p>
+                    </div>
+                    <a href="#" id="guiaLink" target="_blank">Descargar PDF</a>
+                </div>
+
+                <div class="material-item">
+                    <div>
+                        <h3>Plan 30 Días (Tu Ruta)</h3>
+                        <p>El plan personalizado generado en la Clase 4.</p>
+                    </div>
+                    <a href="#" id="planLink" target="_blank">Descargar PDF</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION: CERTIFICADO -->
+        <section class="section" id="certificado">
+            <h1 style="font-family: 'Playfair Display', serif; color: #584CB5; margin-bottom: 30px; font-size: 36px;">Tu Certificado</h1>
+
+            <div style="background: white; padding: 40px; border-radius: 12px; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);">
+                <div id="certificadoMessage" style="text-align: center; padding: 40px;">
+                    <p style="color: #999; font-size: 18px; margin-bottom: 20px;">Completa todas las clases para desbloquear tu certificado.</p>
+                    <p style="color: #666; font-size: 14px;">Te falta completar <span id="clasesRestantes">4</span> clase(s).</p>
+                </div>
+
+                <div id="certificadoView" style="display: none; text-align: center;">
+                    <div style="border: 3px solid #584CB5; padding: 50px; margin: 30px 0; border-radius: 12px; background: linear-gradient(135deg, #f0f4ff 0%, #fff 100%);">
+                        <h2 style="font-family: 'Playfair Display', serif; color: #584CB5; font-size: 42px; margin-bottom: 15px;">Certificado de Completación</h2>
+                        <p style="color: #666; font-size: 16px; margin-bottom: 20px;">Se certifica que</p>
+                        <h1 id="certificadoName" style="font-family: 'Playfair Display', serif; font-size: 32px; color: #2A2A2D; margin-bottom: 20px;">Estudiante</h1>
+                        <p style="color: #666; font-size: 16px; margin-bottom: 30px;">ha completado exitosamente el programa</p>
+                        <h3 style="color: #584CB5; font-size: 24px; margin-bottom: 20px;">NeuroClick 2026</h3>
+                        <p style="color: #666; font-size: 14px; margin-bottom: 20px;">"Tu Inteligencia Amplificada"</p>
+                        <p style="color: #999; font-size: 12px; margin-top: 40px;" id="certificadoDate"></p>
+                    </div>
+                    <a href="#" onclick="downloadCertificate(event)" class="resource-btn" style="display: inline-block; margin-top: 20px; padding: 14px 30px;">⬇️ Descargar Certificado</a>
+                </div>
+            </div>
+        </section>
+
+    </main>
+</div>
+
+<footer>
+    <p>&copy; 2026 Ada Demitropulos | NeuroClick™ - Inteligencia Amplificada para Líderes Conscientes</p>
+</footer>
+
+<script>
+// CONFIGURACIÓN DE SUPABASE PARA AUTENTICACIÓN
+const SUPABASE_URL = 'https://eoceqdgeptdevudoniuk.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVvY2VxZGdlcHRkZXZ1ZG9uaXVrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk0NTkyMDksImV4cCI6MjA5NTAzNTIwOX0.8qKGJfLzZUydzWuG-n78_8Rs9X1ZHkzBkhV98vtCdtM';
+
+const Auth = {
+  currentUser: null,
+  async signup(email, password, nombre) {
+    try {
+      const signupResponse = await fetch(`${SUPABASE_URL}/auth/v1/signup`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'apikey': SUPABASE_ANON_KEY },
+        body: JSON.stringify({ email, password })
+      });
+      if (!signupResponse.ok) {
+        const error = await signupResponse.json();
+        throw new Error(error.message || 'Error al crear cuenta');
+      }
+      const userData = await signupResponse.json();
+      const userId = userData.user.id;
+      const estudianteResponse = await fetch(`${SUPABASE_URL}/rest/v1/estudiantes`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'apikey': SUPABASE_ANON_KEY, 'Authorization': `Bearer ${SUPABASE_ANON_KEY}` },
+        body: JSON.stringify({ id: userId, email, nombre, tipo_programa: 'pendiente', estado: 'activo' })
+      });
+      return { success: true, userId };
+    } catch (error) {
+      return { success: false, error: error.message };
+    }
+  },
+  async login(email, password) {
+    try {
+      const response = await fetch(`${SUPABASE_URL}/auth/v1/token?grant_type=password`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'apikey': SUPABASE_ANON_KEY },
+        body: JSON.stringify({ email, password })
+      });
+      if (!response.ok) throw new Error('Email o contraseña incorrectos');
+      const data = await response.json();
+      localStorage.setItem('access_token', data.access_token);
+      localStorage.setItem('refresh_token', data.refresh_token);
+      localStorage.setItem('user_id', data.user.id);
+      localStorage.setItem('user_email', data.user.email);
+      this.currentUser = { id: data.user.id, email: data.user.email };
+      return { success: true, user: this.currentUser };
+    } catch (error) {
+      return { success: false, error: error.message };
+    }
+  },
+  logout() {
+    localStorage.removeItem('access_token');
+    localStorage.removeItem('refresh_token');
+    localStorage.removeItem('user_id');
+    localStorage.removeItem('user_email');
+    this.currentUser = null;
+    window.location.href = '/auth.html';
+  },
+  checkSession() {
+    const token = localStorage.getItem('access_token');
+    const userId = localStorage.getItem('user_id');
+    const userEmail = localStorage.getItem('user_email');
+    if (token && userId) {
+      this.currentUser = { id: userId, email: userEmail };
+      return true;
+    }
+    return false;
+  },
+  getToken() { return localStorage.getItem('access_token'); },
+  getUserId() { return localStorage.getItem('user_id'); },
+  getUserEmail() { return localStorage.getItem('user_email'); }
+};
+
+window.addEventListener('DOMContentLoaded', () => { Auth.checkSession(); });
+</script>
+
+<script>
+    // VERIFICAR SESIÓN - Si no hay sesión, redirigir a login
+    if (!Auth.checkSession()) {
+        window.location.href = '/auth.html';
+    }
+
+    // MOCK DATA - Reemplazar con Supabase
+    const mockStudent = {
+        name: Auth.getUserEmail() || 'Estudiante',
+        email: 'maria@example.com',
+        programa: 'sincronico',
+        completedClasses: 0,
+        materials: {
+            cuaderno: 'https://drive.google.com/file/d/...',
+            guia: 'https://drive.google.com/file/d/...',
+            plan: 'https://drive.google.com/file/d/...'
+        },
+        clases: {
+            1: { video: 'https://drive.google.com/file/d/...', ejercicio: 'https://drive.google.com/file/d/...' },
+            2: { video: null, ejercicio: null },
+            3: { video: null, ejercicio: null },
+            4: { video: null, ejercicio: null }
+        }
+    };
+
+    // INITIALIZE
+    window.addEventListener('load', () => {
+        document.getElementById('userName').textContent = mockStudent.name;
+        loadContent();
+    });
+
+    function loadContent() {
+        // Cargar videos y ejercicios
+        const clase1Video = document.getElementById('video1');
+        const clase1Ejercicio = document.getElementById('ejercicio1');
+
+        if (mockStudent.clases[1].video) {
+            clase1Video.disabled = false;
+            clase1Video.href = mockStudent.clases[1].video;
+        }
+
+        if (mockStudent.clases[1].ejercicio) {
+            clase1Ejercicio.disabled = false;
+            clase1Ejercicio.href = mockStudent.clases[1].ejercicio;
+        }
+
+        // Cargar materiales
+        const cuadernoLink = document.getElementById('cuadernoLink');
+        const guiaLink = document.getElementById('guiaLink');
+        const planLink = document.getElementById('planLink');
+
+        if (mockStudent.materials.cuaderno) {
+            cuadernoLink.href = mockStudent.materials.cuaderno;
+        }
+
+        if (mockStudent.materials.guia) {
+            guiaLink.href = mockStudent.materials.guia;
+        }
+
+        if (mockStudent.materials.plan) {
+            planLink.href = mockStudent.materials.plan;
+        }
+
+        updateProgress();
+    }
+
+    function updateProgress() {
+        const total = 4;
+        const completed = mockStudent.completedClasses;
+        const percentage = (completed / total) * 100;
+
+        document.getElementById('progressFill').style.width = percentage + '%';
+        document.getElementById('progressFill').textContent = Math.round(percentage) + '%';
+        document.getElementById('completedClasses').textContent = completed;
+        document.getElementById('clasesRestantes').textContent = total - completed;
+
+        if (completed === total) {
+            document.getElementById('certificadoMessage').style.display = 'none';
+            document.getElementById('certificadoView').style.display = 'block';
+            document.getElementById('certificadoName').textContent = mockStudent.name;
+            const today = new Date().toLocaleDateString('es-ES', { year: 'numeric', month: 'long', day: 'numeric' });
+            document.getElementById('certificadoDate').textContent = 'Emitido: ' + today;
+        }
+    }
+
+    function switchSection(sectionId, event) {
+        event.preventDefault();
+
+        // Hide all sections
+        document.querySelectorAll('.section').forEach(section => {
+            section.classList.remove('active');
+        });
+
+        // Remove active from all menu items
+        document.querySelectorAll('.sidebar-menu a').forEach(link => {
+            link.classList.remove('active');
+        });
+
+        // Show selected section
+        document.getElementById(sectionId).classList.add('active');
+
+        // Add active to clicked menu item
+        event.target.classList.add('active');
+    }
+
+    function downloadCertificate(event) {
+        event.preventDefault();
+        alert('Descarga del certificado (implementar con jsPDF)');
+    }
+
+    function logout() {
+        Auth.logout();
+    }
+</script>
+
+</body>
+</html>
