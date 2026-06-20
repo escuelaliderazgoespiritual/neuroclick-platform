@@ -736,8 +736,8 @@ window.addEventListener('DOMContentLoaded', () => { Auth.checkSession(); });
     // VERIFICAR QUE SEA ADA
     const adminEmail = 'neuroclick@liderazgoespiritual.com';
     if (Auth.getUserEmail() !== adminEmail) {
-        alert('No tienes permiso para acceder a este panel.');
-        window.location.href = '/';
+        alert('Solo Ada (neuroclick@liderazgoespiritual.com) puede acceder. Inicia sesión con la cuenta correcta.');
+        window.location.href = '/auth.html';
     }
 
     let selectedStudent = null;
