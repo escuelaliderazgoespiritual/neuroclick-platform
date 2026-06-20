@@ -974,18 +974,21 @@
         document.getElementById('program').scrollIntoView({ behavior: 'smooth' });
     }
 
+
     function scrollToContact() {
-        alert('📧 Email: neuroclick@liderazgoespiritual.com\n\n📱 WhatsApp: wa.link/neuroclick');
+        const contactModal = document.createElement('div');
+        contactModal.style.cssText = 'position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 40px; border-radius: 12px; box-shadow: 0 10px 40px rgba(0,0,0,0.2); z-index: 1000; text-align: center; max-width: 400px;';
+        
+        contactModal.innerHTML = '<h2 style="color: #584CB5; margin-bottom: 20px; font-family: Playfair Display, serif;">Contacto</h2><p style="color: #666; margin-bottom: 30px;">Elige cómo prefieres comunicarte:</p><div style="display: flex; gap: 15px; justify-content: center; flex-wrap: wrap;"><button onclick="copyEmail(); this.textContent=\'¡Copiado!\'; setTimeout(() => this.textContent=\'📧 Email\', 2000);" style="background: #584CB5; color: white; padding: 12px 25px; border-radius: 6px; border: none; font-weight: 600; cursor: pointer; font-family: Inter, sans-serif; font-size: 14px;">📧 Email</button><a href="https://wa.link/neuroclick" target="_blank" style="background: #67D98D; color: white; padding: 12px 25px; border-radius: 6px; text-decoration: none; font-weight: 600; display: inline-block;">📱 WhatsApp</a></div><button onclick="this.parentElement.parentElement.remove()" style="margin-top: 20px; background: #ddd; color: #666; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: 600;">Cerrar</button>';
+        
+        const overlay = document.createElement('div');
+        overlay.style.cssText = 'position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 999;';
+        overlay.onclick = () => { overlay.remove(); contactModal.remove(); };
+        
+        document.body.appendChild(overlay);
+        document.body.appendChild(contactModal);
     }
-
-    // Cerrar modal al hacer click fuera
-    window.onclick = function(event) {
-        const modal = document.getElementById('checkoutModal');
-        if (event.target === modal) {
-            modal.classList.remove('active');
-        }
+    
+    function copyEmail() {
+        navigator.clipboard.writeText('neuroclick@liderazgoespiritual.com');
     }
-</script>
-
-</body>
-</html>
