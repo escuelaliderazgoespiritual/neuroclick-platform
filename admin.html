@@ -1,0 +1,830 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NeuroClick - Panel Admin</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f5f5f5;
+            color: #2A2A2D;
+        }
+
+        /* HEADER */
+        header {
+            background: #313155;
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: white;
+        }
+
+        header .logo {
+            font-family: 'Playfair Display', serif;
+            font-size: 24px;
+            font-weight: 700;
+            color: #584CB5;
+        }
+
+        header .admin-info {
+            text-align: right;
+        }
+
+        header .logout {
+            color: #ED8FA7;
+            cursor: pointer;
+            font-size: 14px;
+            text-decoration: underline;
+        }
+
+        /* MAIN CONTAINER */
+        .admin-container {
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 0;
+            min-height: calc(100vh - 70px);
+        }
+
+        .sidebar {
+            background: #313155;
+            padding: 30px 0;
+            color: white;
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .sidebar-menu {
+            list-style: none;
+        }
+
+        .sidebar-menu li {
+            padding: 0;
+        }
+
+        .sidebar-menu a {
+            display: block;
+            padding: 15px 30px;
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            border-left: 4px solid transparent;
+            transition: all 0.3s;
+            font-weight: 500;
+        }
+
+        .sidebar-menu a:hover,
+        .sidebar-menu a.active {
+            background: rgba(88, 76, 181, 0.2);
+            color: #ED8FA7;
+            border-left-color: #ED8FA7;
+        }
+
+        /* MAIN CONTENT */
+        .main-content {
+            padding: 40px;
+            background: #f5f5f5;
+            overflow-y: auto;
+        }
+
+        .section {
+            display: none;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        /* PAGE TITLE */
+        h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 36px;
+            color: #584CB5;
+            margin-bottom: 30px;
+        }
+
+        /* CARDS */
+        .card {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            margin-bottom: 30px;
+        }
+
+        /* STUDENTS LIST */
+        .students-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 25px;
+        }
+
+        .student-card {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            border-left: 4px solid #584CB5;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .student-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(88, 76, 181, 0.2);
+        }
+
+        .student-card h3 {
+            color: #584CB5;
+            margin-bottom: 10px;
+            font-size: 18px;
+        }
+
+        .student-card p {
+            font-size: 14px;
+            color: #666;
+            margin: 5px 0;
+        }
+
+        .student-status {
+            display: inline-block;
+            margin-top: 15px;
+            padding: 6px 12px;
+            background: #67D98D;
+            color: white;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .student-status.pending {
+            background: #F7B955;
+        }
+
+        /* FORM SECTIONS */
+        .form-section {
+            margin-bottom: 40px;
+            padding: 25px;
+            background: #f9f9f9;
+            border-radius: 10px;
+            border-left: 4px solid #584CB5;
+        }
+
+        .form-section h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 22px;
+            color: #584CB5;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #584CB5;
+            font-size: 14px;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-family: 'Inter', sans-serif;
+            font-size: 14px;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #584CB5;
+            box-shadow: 0 0 0 3px rgba(88, 76, 181, 0.1);
+        }
+
+        .form-group input:disabled {
+            background: #e0e0e0;
+            cursor: not-allowed;
+        }
+
+        /* BUTTONS */
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: #584CB5;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #B31962;
+        }
+
+        .btn-secondary {
+            background: #ED8FA7;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #B31962;
+        }
+
+        .btn-success {
+            background: #67D98D;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #4ec970;
+        }
+
+        .btn:disabled {
+            background: #999;
+            cursor: not-allowed;
+        }
+
+        /* BACK BUTTON */
+        .back-btn {
+            display: inline-block;
+            margin-bottom: 20px;
+            padding: 10px 20px;
+            background: #313155;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.3s;
+        }
+
+        .back-btn:hover {
+            background: #584CB5;
+        }
+
+        /* INFO BOXES */
+        .info-box {
+            padding: 20px;
+            background: linear-gradient(135deg, #f0f4ff 0%, #fff 100%);
+            border-left: 4px solid #584CB5;
+            border-radius: 8px;
+            margin-bottom: 25px;
+        }
+
+        .info-box h3 {
+            color: #584CB5;
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+
+        .info-box p {
+            color: #666;
+            font-size: 14px;
+        }
+
+        /* ALERTS */
+        .alert {
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+
+        .alert.success {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+
+        .alert.error {
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+
+        .alert.info {
+            background: #d1ecf1;
+            border: 1px solid #bee5eb;
+            color: #0c5460;
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 768px) {
+            .admin-container {
+                grid-template-columns: 1fr;
+            }
+
+            .sidebar {
+                display: flex;
+                overflow-x: auto;
+                padding: 10px 0;
+                border-right: none;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            }
+
+            .sidebar-menu {
+                display: flex;
+                gap: 0;
+            }
+
+            .sidebar-menu li {
+                flex-shrink: 0;
+            }
+
+            .students-grid {
+                grid-template-columns: 1fr;
+            }
+
+            h1 {
+                font-size: 28px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="logo">NeuroClick™ Admin</div>
+    <div class="admin-info">
+        <div style="font-weight: 600; margin-bottom: 5px;">Ada Demitropulos</div>
+        <span class="logout" onclick="logout()">Cerrar sesión</span>
+    </div>
+</header>
+
+<div class="admin-container">
+
+    <aside class="sidebar">
+        <ul class="sidebar-menu">
+            <li><a href="#" onclick="switchSection('dashboard', event)" class="active">Dashboard</a></li>
+            <li><a href="#" onclick="switchSection('estudiantes', event)">Estudiantes</a></li>
+            <li><a href="#" onclick="switchSection('contenido', event)">Subir Contenido</a></li>
+            <li><a href="#" onclick="switchSection('reportes', event)">Reportes</a></li>
+        </ul>
+    </aside>
+
+    <main class="main-content">
+
+        <!-- SECTION: DASHBOARD -->
+        <section class="section active" id="dashboard">
+            <h1>Dashboard Admin</h1>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-bottom: 40px;">
+                <div class="card">
+                    <h3 style="color: #584CB5; margin-bottom: 10px; font-size: 28px; font-weight: bold;">10</h3>
+                    <p style="color: #666; font-size: 14px;">Estudiantes Registrados</p>
+                </div>
+                <div class="card">
+                    <h3 style="color: #B31962; margin-bottom: 10px; font-size: 28px; font-weight: bold;">3</h3>
+                    <p style="color: #666; font-size: 14px;">Pendientes de Contenido</p>
+                </div>
+                <div class="card">
+                    <h3 style="color: #67D98D; margin-bottom: 10px; font-size: 28px; font-weight: bold;">7</h3>
+                    <p style="color: #666; font-size: 14px;">Con Contenido Subido</p>
+                </div>
+                <div class="card">
+                    <h3 style="color: #F7B955; margin-bottom: 10px; font-size: 28px; font-weight: bold;">2</h3>
+                    <p style="color: #666; font-size: 14px;">Certificados Emitidos</p>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2 style="font-family: 'Playfair Display', serif; color: #584CB5; margin-bottom: 20px; font-size: 24px;">Últimos Estudiantes Registrados</h2>
+                <div style="overflow-x: auto;">
+                    <table style="width: 100%; border-collapse: collapse; font-size: 14px;">
+                        <thead>
+                            <tr style="border-bottom: 2px solid #e0e0e0;">
+                                <th style="text-align: left; padding: 12px; color: #584CB5; font-weight: 600;">Nombre</th>
+                                <th style="text-align: left; padding: 12px; color: #584CB5; font-weight: 600;">Email</th>
+                                <th style="text-align: left; padding: 12px; color: #584CB5; font-weight: 600;">Programa</th>
+                                <th style="text-align: left; padding: 12px; color: #584CB5; font-weight: 600;">Estado</th>
+                                <th style="text-align: left; padding: 12px; color: #584CB5; font-weight: 600;">Acción</th>
+                            </tr>
+                        </thead>
+                        <tbody id="studentsTableBody">
+                            <!-- Los estudiantes se cargarán desde Supabase aquí -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION: ESTUDIANTES -->
+        <section class="section" id="estudiantes">
+            <h1>Gestionar Estudiantes</h1>
+
+            <div class="card">
+                <h2 style="font-family: 'Playfair Display', serif; color: #584CB5; margin-bottom: 25px; font-size: 24px;">Todos los Estudiantes</h2>
+
+                <div class="students-grid" id="studentsGrid">
+                    <!-- Los estudiantes se cargarán desde Supabase aquí -->
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION: SUBIR CONTENIDO -->
+        <section class="section" id="contenido">
+            <button class="back-btn" onclick="switchSection('estudiantes', event)">← Volver</button>
+            <h1 id="studentName">Selecciona un Estudiante</h1>
+
+            <div class="info-box">
+                <h3>📝 Instrucciones</h3>
+                <p>Pega los links de Google Drive para cada clase. Los links deben ser compartibles (Acceso: Cualquiera que tenga el link puede ver).</p>
+            </div>
+
+            <!-- CLASES DINÁMICAS -->
+            <div id="clasesContainer"></div>
+
+            <!-- CUADERNO Y CERTIFICADO -->
+            <div class="form-section">
+                <h2>📄 Documentos Personalizados</h2>
+                
+                <div class="form-group">
+                    <label>Link Cuaderno Personalizado (PDF Google Drive)</label>
+                    <input type="text" id="cuaderno" placeholder="https://drive.google.com/file/d/...">
+                    <small style="color: #999; margin-top: 5px; display: block;">El cuaderno que Ada genera manualmente después de la Clase 0.</small>
+                </div>
+
+                <div class="form-group">
+                    <label>Link Guía de Referencia (Opcional)</label>
+                    <input type="text" id="guia" placeholder="https://drive.google.com/file/d/...">
+                </div>
+
+                <div class="form-group">
+                    <label>Link Plan 30 Días (Opcional)</label>
+                    <input type="text" id="plan" placeholder="https://drive.google.com/file/d/...">
+                </div>
+
+                <button class="btn btn-success" onclick="saveDocuments()">Guardar Documentos</button>
+            </div>
+
+            <div id="alertBox"></div>
+        </section>
+
+        <!-- SECTION: REPORTES -->
+        <section class="section" id="reportes">
+            <h1>Reportes</h1>
+
+            <div class="card">
+                <h2 style="font-family: 'Playfair Display', serif; color: #584CB5; margin-bottom: 25px; font-size: 24px;">Resumen Mensual</h2>
+
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px;">
+                    <div>
+                        <h3 style="color: #584CB5; margin-bottom: 10px;">Conversión de Pago</h3>
+                        <p style="font-size: 28px; font-weight: bold; color: #2A2A2D; margin-bottom: 5px;">70%</p>
+                        <p style="font-size: 12px; color: #999;">7 de 10 estudiantes pagaron</p>
+                    </div>
+                    <div>
+                        <h3 style="color: #B31962; margin-bottom: 10px;">Finalización de Cursos</h3>
+                        <p style="font-size: 28px; font-weight: bold; color: #2A2A2D; margin-bottom: 5px;">40%</p>
+                        <p style="font-size: 12px; color: #999;">4 de 10 estudiantes completaron</p>
+                    </div>
+                    <div>
+                        <h3 style="color: #67D98D; margin-bottom: 10px;">Ingresos Totales</h3>
+                        <p style="font-size: 28px; font-weight: bold; color: #2A2A2D; margin-bottom: 5px;">$1,050</p>
+                        <p style="font-size: 12px; color: #999;">7 × $150 USD</p>
+                    </div>
+                    <div>
+                        <h3 style="color: #F7B955; margin-bottom: 10px;">Programas Vendidos</h3>
+                        <p style="font-size: 28px; font-weight: bold; color: #2A2A2D; margin-bottom: 5px;">4 Síncronos / 3 Asinc.</p>
+                        <p style="font-size: 12px; color: #999;">Distribución de compra</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2 style="font-family: 'Playfair Display', serif; color: #584CB5; margin-bottom: 25px; font-size: 24px;">Engagement por Clase</h2>
+                <p style="font-size: 14px; color: #666; margin-bottom: 20px;">Estudiantes que accedieron a cada clase (de los que tienen contenido):</p>
+                
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
+                    <div style="background: #f9f9f9; padding: 15px; border-radius: 8px; border-left: 4px solid #584CB5;">
+                        <p style="font-size: 12px; color: #666; margin-bottom: 8px;">Clase 1: Prompts</p>
+                        <p style="font-size: 20px; font-weight: bold; color: #584CB5;">6/7 (85%)</p>
+                    </div>
+                    <div style="background: #f9f9f9; padding: 15px; border-radius: 8px; border-left: 4px solid #B31962;">
+                        <p style="font-size: 12px; color: #666; margin-bottom: 8px;">Clase 2: Herramientas</p>
+                        <p style="font-size: 20px; font-weight: bold; color: #B31962;">4/7 (57%)</p>
+                    </div>
+                    <div style="background: #f9f9f9; padding: 15px; border-radius: 8px; border-left: 4px solid #67D98D;">
+                        <p style="font-size: 12px; color: #666; margin-bottom: 8px;">Clase 3: Ecosystem</p>
+                        <p style="font-size: 20px; font-weight: bold; color: #67D98D;">2/7 (29%)</p>
+                    </div>
+                    <div style="background: #f9f9f9; padding: 15px; border-radius: 8px; border-left: 4px solid #F7B955;">
+                        <p style="font-size: 12px; color: #666; margin-bottom: 8px;">Clase 4: Proyectos</p>
+                        <p style="font-size: 20px; font-weight: bold; color: #F7B955;">1/7 (14%)</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+</div>
+
+<script>
+// CONFIGURACIÓN DE SUPABASE PARA AUTENTICACIÓN
+const CLASES_POR_PROGRAMA = {
+    neuroclick: [
+        { num: 1, titulo: 'Clase 0: Diagnóstico Personalizado' },
+        { num: 2, titulo: 'Clase 1: Fórmula de 4 Pasos' },
+        { num: 3, titulo: 'Clase 2: Modelos de IA — Tu Equipo Asistente' },
+        { num: 4, titulo: 'Clase 3: Ecosistema Gemini' },
+        { num: 5, titulo: 'Clase 4: Generadores de Imágenes' }
+    ],
+    'bonus-videos': [
+        { num: 1, titulo: 'Clase 1: Primer contacto con videos generados por IA' },
+        { num: 2, titulo: 'Clase 2: Storytelling visual en cinco escenas' },
+        { num: 3, titulo: 'Clase 3: Refinamiento, música, logo y publicación' },
+        { num: 4, titulo: 'Clase 4: Cuadernos de estudio y contenido reutilizable' }
+    ],
+    masterclick1: [
+        { num: 1, titulo: 'Clase 1: Diagnóstico, Avatar y Mensaje Central' },
+        { num: 2, titulo: 'Clase 2: Identidad Visual y Branding Emocional' },
+        { num: 3, titulo: 'Clase 3: De Publicar a Tener un Plan' },
+        { num: 4, titulo: 'Clase 4: Del Contenido al Criterio' }
+    ],
+    masterclick2: [
+        { num: 5, titulo: 'Clase 5: El viaje de tu cliente' },
+        { num: 6, titulo: 'Clase 6: La página que trabaja mientras dormís' },
+        { num: 7, titulo: 'Clase 7: La conversación que cierra' },
+        { num: 8, titulo: 'Clase 8: El lanzamiento real' }
+    ]
+};
+
+function renderClasesAdmin(tipoProg) {
+    const clases = CLASES_POR_PROGRAMA[tipoProg] || CLASES_POR_PROGRAMA['neuroclick'];
+    const container = document.getElementById('clasesContainer');
+    container.innerHTML = clases.map(c => `
+        <div class="form-section">
+            <h2>📹 ${c.titulo}</h2>
+            <div class="form-group">
+                <label>Link Video (YouTube o Google Drive)</label>
+                <input type="text" id="video${c.num}" placeholder="https://...">
+            </div>
+            <div class="form-group">
+                <label>Link Material PDF (Google Drive)</label>
+                <input type="text" id="ejercicio${c.num}" placeholder="https://drive.google.com/file/d/...">
+            </div>
+            <button class="btn btn-primary" onclick="saveClass(${c.num})">Guardar Clase ${c.num}</button>
+        </div>
+    `).join('');
+}
+
+const SUPABASE_URL = 'https://eoceqdgeptdevudoniuk.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVvY2VxZGdlcHRkZXZ1ZG9uaXVrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk0NTkyMDksImV4cCI6MjA5NTAzNTIwOX0.8qKGJfLzZUydzWuG-n78_8Rs9X1ZHkzBkhV98vtCdtM';
+
+const Auth = {
+  currentUser: null,
+  async signup(email, password, nombre) {
+    try {
+      const signupResponse = await fetch(`${SUPABASE_URL}/auth/v1/signup`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'apikey': SUPABASE_ANON_KEY },
+        body: JSON.stringify({ email, password })
+      });
+      if (!signupResponse.ok) {
+        const error = await signupResponse.json();
+        throw new Error(error.message || 'Error al crear cuenta');
+      }
+      const userData = await signupResponse.json();
+      const userId = userData.user.id;
+      const estudianteResponse = await fetch(`${SUPABASE_URL}/rest/v1/estudiantes`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'apikey': SUPABASE_ANON_KEY, 'Authorization': `Bearer ${SUPABASE_ANON_KEY}` },
+        body: JSON.stringify({ id: userId, email, nombre, tipo_programa: 'pendiente', estado: 'activo' })
+      });
+      return { success: true, userId };
+    } catch (error) {
+      return { success: false, error: error.message };
+    }
+  },
+  async login(email, password) {
+    try {
+      const response = await fetch(`${SUPABASE_URL}/auth/v1/token?grant_type=password`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'apikey': SUPABASE_ANON_KEY },
+        body: JSON.stringify({ email, password })
+      });
+      if (!response.ok) throw new Error('Email o contraseña incorrectos');
+      const data = await response.json();
+      localStorage.setItem('access_token', data.access_token);
+      localStorage.setItem('refresh_token', data.refresh_token);
+      localStorage.setItem('user_id', data.user.id);
+      localStorage.setItem('user_email', data.user.email);
+      this.currentUser = { id: data.user.id, email: data.user.email };
+      return { success: true, user: this.currentUser };
+    } catch (error) {
+      return { success: false, error: error.message };
+    }
+  },
+  logout() {
+    localStorage.removeItem('access_token');
+    localStorage.removeItem('refresh_token');
+    localStorage.removeItem('user_id');
+    localStorage.removeItem('user_email');
+    this.currentUser = null;
+    window.location.href = '/auth.html';
+  },
+  checkSession() {
+    const token = localStorage.getItem('access_token');
+    const userId = localStorage.getItem('user_id');
+    const userEmail = localStorage.getItem('user_email');
+    if (token && userId) {
+      this.currentUser = { id: userId, email: userEmail };
+      return true;
+    }
+    return false;
+  },
+  getToken() { return localStorage.getItem('access_token'); },
+  getUserId() { return localStorage.getItem('user_id'); },
+  getUserEmail() { return localStorage.getItem('user_email'); }
+};
+
+window.addEventListener('DOMContentLoaded', () => { Auth.checkSession(); });
+</script>
+
+<script>
+    // VERIFICAR SESIÓN - Si no hay sesión, redirigir a login
+    if (!Auth.checkSession()) {
+        window.location.href = '/auth.html';
+    }
+
+    // VERIFICAR QUE SEA ADA
+    const adminEmail = 'neuroclick@liderazgoespiritual.com';
+    if (Auth.getUserEmail() !== adminEmail) {
+        alert('Solo Ada (neuroclick@liderazgoespiritual.com) puede acceder. Haz logout y inicia sesión con la cuenta correcta.');
+        // No redirige automáticamente — permite al usuario hacer logout
+    }
+
+    // CARGAR ESTUDIANTES AL INICIAR
+    loadStudents();
+
+    let selectedStudent = null;
+    let students = [];
+
+    // CARGAR ESTUDIANTES DESDE SUPABASE
+    async function loadStudents() {
+        try {
+            const response = await fetch(`${SUPABASE_URL}/rest/v1/estudiantes?select=*`, {
+                method: 'GET',
+                headers: {
+                    'apikey': SUPABASE_ANON_KEY,
+                    'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+            if (!response.ok) throw new Error('Error al cargar estudiantes');
+            students = await response.json();
+            renderStudents();
+        } catch (error) {
+            console.error('Error cargando estudiantes:', error);
+        }
+    }
+
+    // RENDERIZAR TARJETAS DE ESTUDIANTES
+    function renderStudents() {
+        const grid = document.getElementById('studentsGrid');
+        const tbody = document.getElementById('studentsTableBody');
+        
+        if (students.length === 0) {
+            grid.innerHTML = '<p style="color: #999;">No hay estudiantes registrados aún.</p>';
+            tbody.innerHTML = '<tr><td colspan="5" style="padding: 20px; text-align: center; color: #999;">No hay estudiantes registrados aún.</td></tr>';
+            return;
+        }
+
+        // Renderizar grid de tarjetas
+        grid.innerHTML = students.map(student => `
+            <div class="student-card" onclick="selectStudent('${student.email}'); switchSection('contenido', event);">
+                <h3>${student.nombre || 'Sin nombre'}</h3>
+                <p><strong>Email:</strong> ${student.email}</p>
+                <p><strong>Programa:</strong> ${student.tipo_programa || 'No especificado'}</p>
+                ${student.horario ? `<p><strong>Horario:</strong> ${student.horario}</p>` : ''}
+                <span class="student-status ${student.estado === 'activo' ? '' : 'pending'}">${student.estado === 'activo' ? 'Activo' : 'Pendiente'}</span>
+            </div>
+        `).join('');
+
+        // Renderizar tabla
+        tbody.innerHTML = students.map(student => `
+            <tr style="border-bottom: 1px solid #e0e0e0;">
+                <td style="padding: 12px;">${student.nombre || 'Sin nombre'}</td>
+                <td style="padding: 12px;">${student.email}</td>
+                <td style="padding: 12px;">${student.tipo_programa || 'No especificado'}</td>
+                <td style="padding: 12px;"><span style="background: ${student.pagado ? '#67D98D' : '#F7B955'}; color: white; padding: 4px 10px; border-radius: 12px; font-size: 12px;">${student.pagado ? 'Pagado' : 'Pendiente'}</span></td>
+                <td style="padding: 12px;"><a href="#" onclick="switchSection('contenido', event); selectStudent('${student.email}'); return false;" style="color: #584CB5; text-decoration: none; font-weight: 600;">Cargar Contenido</a></td>
+            </tr>
+        `).join('');
+    }
+
+    function selectStudent(email) {
+        selectedStudent = email;
+        const student = students.find(s => s.email === email);
+        document.getElementById('studentName').textContent = 'Contenido para: ' + (student?.nombre || email);
+        const prog = student?.tipo_programa || 'neuroclick';
+        renderClasesAdmin(prog);
+    }
+
+    function switchSection(sectionId, event) {
+        if (event) {
+            event.preventDefault();
+        }
+
+        // Hide all sections
+        document.querySelectorAll('.section').forEach(section => {
+            section.classList.remove('active');
+        });
+
+        // Remove active from all menu items
+        document.querySelectorAll('.sidebar-menu a').forEach(link => {
+            link.classList.remove('active');
+        });
+
+        // Show selected section
+        document.getElementById(sectionId).classList.add('active');
+
+        // Add active to clicked menu item
+        if (event && event.target) {
+            event.target.classList.add('active');
+        }
+    }
+
+    function saveClass(classNumber) {
+        const videoUrl = document.getElementById('video' + classNumber).value;
+        const ejercicioUrl = document.getElementById('ejercicio' + classNumber).value;
+
+        if (!videoUrl || !ejercicioUrl) {
+            showAlert('Por favor completa ambos campos', 'error');
+            return;
+        }
+
+        if (!selectedStudent) {
+            showAlert('Por favor selecciona un estudiante', 'error');
+            return;
+        }
+
+        // Aquí iría la llamada a Supabase
+        console.log({
+            student: selectedStudent,
+            class: classNumber,
+            video: videoUrl,
+            ejercicio: ejercicioUrl
+        });
+
+        showAlert(`Clase ${classNumber} guardada para ${selectedStudent}`, 'success');
+    }
+
+    function saveDocuments() {
+        const cuadernoUrl = document.getElementById('cuaderno').value;
+        const guiaUrl = document.getElementById('guia').value;
+        const planUrl = document.getElementById('plan').value;
+
+        if (!cuadernoUrl) {
+            showAlert('El cuaderno personalizado es obligatorio', 'error');
+            return;
+        }
+
+        if (!selectedStudent) {
+            showAlert('Por favor selecciona un estudiante', 'error');
+            return;
+        }
+
+        // Aquí iría la llamada a Supabase
+        console.log({
+            student: selectedStudent,
+            cuaderno: cuadernoUrl,
+            guia: guiaUrl,
+            plan: planUrl
+        });
+
+        showAlert('Documentos guardados correctamente', 'success');
+    }
+
+    function showAlert(message, type) {
+        const alertBox = document.getElementById('alertBox');
+        alertBox.innerHTML = `<div class="alert ${type}">${message}</div>`;
+        setTimeout(() => {
+            alertBox.innerHTML = '';
+        }, 5000);
+    }
+
+    function logout() {
+        Auth.logout();
+    }
+</script>
+
+</body>
+</html>
