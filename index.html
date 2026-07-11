@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NeuroClick™ - Tu Inteligencia Amplificada Por IA</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://www.paypal.com/sdk/js?client-id=AUHRd5qdr5lW-udByHuLguumQg9qEsNjzCCUxtuNaHkFD4hlM9Fw0z64_6rI4Codg2dV-HqPhq48lUPe&currency=USD"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:'Poppins',sans-serif;background:#fafaf8;color:#1a1625;line-height:1.7}
+
+/* NAV */
+.nav{background:#fff;padding:15px 40px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:999;border-bottom:1px solid #f0f0f0;box-shadow:0 2px 8px rgba(0,0,0,0.04)}
+.nav-logo{font-family:'Outfit',sans-serif;font-size:26px;font-weight:700;background:linear-gradient(135deg,#584CB5,#B31962);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.nav-menu{display:flex;gap:35px}
+.nav-menu a{text-decoration:none;font-size:13px;font-weight:600;color:#1a1625;opacity:0.65;transition:opacity 0.2s;cursor:pointer}
+.nav-menu a:hover{opacity:1}
+
+/* HERO */
+.hero{background:linear-gradient(135deg,#1a1625 0%,#2d1f42 50%,#313155 100%);padding:80px 40px;text-align:center;color:#fff;position:relative;overflow:hidden;min-height:480px;display:flex;align-items:center;justify-content:center}
+.hero::before{content:'';position:absolute;top:-200px;right:-100px;width:600px;height:600px;background:radial-gradient(circle,rgba(88,76,181,0.25) 0%,transparent 70%);border-radius:50%}
+.hero::after{content:'';position:absolute;bottom:-150px;left:-80px;width:500px;height:500px;background:radial-gradient(circle,rgba(179,25,98,0.2) 0%,transparent 70%);border-radius:50%}
+.hero-wrap{position:relative;z-index:1;max-width:860px}
+.hero h1{font-family:'Outfit',sans-serif;font-size:58px;font-weight:700;line-height:1.15;margin-bottom:18px;letter-spacing:-1px}
+.hero p{font-size:18px;max-width:680px;margin:0 auto 35px;opacity:0.92}
+.btn-primary{background:linear-gradient(135deg,#584CB5,#B31962);color:#fff;padding:15px 40px;border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer;font-family:'Outfit',sans-serif;transition:all 0.3s;box-shadow:0 10px 30px rgba(88,76,181,0.35)}
+.btn-primary:hover{transform:translateY(-3px);box-shadow:0 15px 40px rgba(88,76,181,0.45)}
+
+/* CONTAINER */
+.container{max-width:1100px;margin:0 auto;padding:0 40px}
+.section{padding:55px 0}
+.section-label{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:#584CB5;font-weight:700;margin-bottom:12px}
+.section h2{font-family:'Outfit',sans-serif;font-size:42px;font-weight:700;color:#1a1625;margin-bottom:25px;text-align:center}
+.section-intro{font-size:15px;color:#666;text-align:center;max-width:680px;margin:0 auto 35px;line-height:1.8}
+
+/* CÓMO FUNCIONA */
+.steps-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:25px;margin-bottom:20px}
+.step{text-align:center;padding:25px 15px}
+.step-num{width:55px;height:55px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:24px;margin:0 auto 15px;color:#fff}
+.step h3{font-size:15px;font-weight:700;margin-bottom:8px}
+.step p{font-size:13px;color:#666;line-height:1.6}
+
+/* PARA QUIÉN */
+.para-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;margin-bottom:20px}
+.para-card{background:#fff;padding:25px;border-radius:12px;text-align:center;border-top:3px solid #584CB5;box-shadow:0 2px 12px rgba(0,0,0,0.06)}
+.para-card .icon{font-size:36px;margin-bottom:12px}
+.para-card h3{font-family:'Outfit',sans-serif;font-size:16px;color:#584CB5;margin-bottom:8px}
+.para-card p{color:#666;font-size:13px;line-height:1.6}
+
+/* CURRICULUM */
+.curriculum-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;margin-bottom:20px}
+.curriculum-card{background:#fff;padding:25px;border-radius:12px;border-left:4px solid #584CB5;box-shadow:0 2px 10px rgba(0,0,0,0.05);transition:all 0.3s}
+.curriculum-card:hover{transform:translateY(-4px);box-shadow:0 8px 24px rgba(88,76,181,0.12)}
+.curriculum-card h3{font-family:'Outfit',sans-serif;font-size:18px;color:#584CB5;margin-bottom:10px}
+.curriculum-card p{color:#666;font-size:13px;line-height:1.6}
+
+/* PROPUESTA ÚNICA */
+.propuesta{background:linear-gradient(135deg,#584CB5 0%,#B31962 100%);color:#fff;padding:50px 40px;border-radius:16px;text-align:center;margin:0}
+.propuesta-badge{display:inline-block;background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.3);padding:8px 22px;border-radius:20px;font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:20px}
+.propuesta h3{font-family:'Outfit',sans-serif;font-size:32px;margin-bottom:15px;line-height:1.3}
+.propuesta p{font-size:15px;max-width:650px;margin:0 auto 25px;opacity:0.9}
+.propuesta-list{list-style:none;max-width:550px;margin:0 auto 25px;text-align:left}
+.propuesta-list li{padding:10px 0 10px 30px;position:relative;font-size:14px;border-bottom:1px solid rgba(255,255,255,0.1)}
+.propuesta-list li:before{content:"✓";position:absolute;left:0;color:#ED8FA7;font-weight:700;font-size:16px}
+.propuesta-list li:last-child{border-bottom:none}
+.urgency{background:rgba(255,255,255,0.1);padding:15px 20px;border-radius:8px;border-left:3px solid #ED8FA7;font-size:14px;font-weight:600;margin:20px 0}
+
+/* FORMATOS */
+.formato-grid{display:grid;grid-template-columns:1fr 1fr;gap:25px;margin-bottom:30px}
+.formato-card{background:#fff;padding:30px;border-radius:12px;border:2px solid #e0e0e0;cursor:pointer;transition:all 0.3s;position:relative}
+.formato-card:hover,.formato-card.active{border-color:#584CB5;background:#f0f4ff;box-shadow:0 8px 24px rgba(88,76,181,0.15)}
+.formato-card h3{font-family:'Outfit',sans-serif;font-size:22px;color:#584CB5;margin-bottom:15px}
+.formato-card ul{list-style:none;font-size:14px}
+.formato-card li{padding:8px 0;border-bottom:1px solid #e8e8e8;color:#555}
+.formato-card li:before{content:"✓ ";color:#67D98D;font-weight:700}
+.formato-card li:last-child{border-bottom:none}
+.formato-btn{display:block;width:100%;margin-top:20px;background:linear-gradient(135deg,#584CB5,#B31962);color:#fff;padding:13px;border:none;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;font-family:'Poppins',sans-serif;transition:all 0.3s;text-align:center}
+.formato-btn:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(88,76,181,0.3)}
+
+/* HORARIOS */
+.schedules-section{background:#f0f4ff;padding:30px;border-radius:12px;margin-top:20px;display:none}
+.schedules-section h3{font-family:'Outfit',sans-serif;font-size:20px;color:#584CB5;margin-bottom:8px}
+.schedule-day{margin-bottom:20px}
+.schedule-day h4{color:#584CB5;font-size:15px;margin-bottom:10px;font-weight:700}
+.schedule-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.schedule-btn{background:#fff;border:2px solid #584CB5;color:#584CB5;padding:12px;border-radius:8px;cursor:pointer;font-weight:600;font-size:14px;transition:all 0.3s;font-family:'Poppins',sans-serif}
+.schedule-btn:hover:not(:disabled){background:#584CB5;color:#fff}
+.schedule-btn.selected{background:#584CB5;color:#fff}
+.schedule-btn:disabled{background:#e0e0e0;border-color:#ccc;color:#999;cursor:not-allowed}
+.schedule-confirm{margin-top:20px;text-align:center}
+.schedule-confirm p{font-size:13px;color:#666;margin-bottom:12px}
+
+/* INSCRIPCIÓN / PASOS */
+.pasos-section{background:#313155;color:#fff;padding:40px;border-radius:16px;margin:40px 0}
+.pasos-section h2{font-family:'Outfit',sans-serif;font-size:28px;margin-bottom:30px;text-align:center}
+.pasos-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:20px}
+.paso{text-align:center}
+.paso-num{width:48px;height:48px;background:rgba(255,255,255,0.15);border:2px solid rgba(255,255,255,0.3);border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:20px;margin:0 auto 12px;color:#ED8FA7}
+.paso h4{font-size:14px;font-weight:700;margin-bottom:6px}
+.paso p{font-size:12px;opacity:0.75;line-height:1.5}
+
+/* PRICING */
+.pricing-section{text-align:center;padding:45px 35px;background:linear-gradient(135deg,#f0f4ff,#faf8ff);border-radius:16px;border:1px solid #e0d4ff;margin:0}
+.pricing-section h2{font-family:'Outfit',sans-serif;font-size:32px;color:#584CB5;margin-bottom:10px}
+.price-display{font-size:52px;font-weight:700;color:#B31962;margin:10px 0;letter-spacing:-1px}
+.price-label{font-size:14px;color:#67D98D;font-weight:600;margin-bottom:20px}
+.payment-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:15px;max-width:700px;margin:25px auto 0}
+.payment-option{background:#fff;padding:22px;border-radius:10px;border:1px solid #e0e0e0;text-align:center}
+.payment-option .icon{font-size:32px;margin-bottom:10px}
+.payment-option h4{color:#584CB5;margin-bottom:6px;font-size:15px}
+.payment-option p{color:#888;font-size:12px;margin-bottom:12px}
+.payment-option a{color:#584CB5;text-decoration:none;font-weight:600;font-size:13px}
+.payment-option a:hover{text-decoration:underline}
+#paypal-button-container{max-width:480px;margin:15px auto;padding:15px;background:#f0f4ff;border-radius:10px;display:none}
+
+/* NIVELES */
+.niveles-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;margin-bottom:40px}
+.nivel-card{background:#fff;border-radius:14px;padding:28px;box-shadow:0 4px 16px rgba(0,0,0,0.07);transition:all 0.3s}
+.nivel-card:hover{transform:translateY(-5px);box-shadow:0 10px 30px rgba(88,76,181,0.15)}
+.nivel-badge{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:10px}
+.nivel-card h3{font-family:'Outfit',sans-serif;font-size:20px;color:#1a1625;margin-bottom:8px}
+.nivel-card .desc{color:#666;font-size:13px;line-height:1.6;margin-bottom:15px}
+.nivel-card ul{list-style:none;margin-bottom:18px}
+.nivel-card li{padding:7px 0;border-bottom:1px solid #f0f0f0;font-size:12px;color:#555}
+.nivel-card li:before{content:"✓ ";color:#67D98D;font-weight:700}
+.nivel-card li:last-child{border-bottom:none}
+.nivel-card .tools{font-size:11px;color:#999;margin-bottom:15px}
+.nivel-card .btn-nivel{display:block;width:100%;padding:12px;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Poppins',sans-serif;transition:all 0.3s;text-align:center;color:#fff}
+.nivel-card .btn-nivel:hover{transform:translateY(-2px);box-shadow:0 6px 18px rgba(0,0,0,0.2)}
+.nivel-card.disabled{opacity:0.5}
+.nivel-card.disabled .btn-nivel{background:#ddd;color:#999;cursor:not-allowed}
+
+/* FAQ */
+.faq-item{background:#fff;border-radius:10px;margin-bottom:10px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.05)}
+.faq-question{padding:18px 22px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;font-weight:600;font-size:15px;color:#1a1625}
+.faq-question:hover{background:#f9f9f9}
+.faq-answer{display:none;padding:0 22px 18px;color:#666;font-size:14px;line-height:1.7}
+.faq-answer.open{display:block}
+.faq-toggle{color:#584CB5;font-size:20px;font-weight:300;transition:transform 0.3s}
+
+/* MODAL */
+.modal{display:none;position:fixed;z-index:2000;left:0;top:0;width:100%;height:100%;background:rgba(0,0,0,0.55);justify-content:center;align-items:center}
+.modal.active{display:flex}
+.modal-content{background:#fff;padding:45px;border-radius:16px;max-width:480px;width:90%;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,0.25)}
+.modal-content h2{color:#584CB5;margin-bottom:15px;font-size:26px;font-family:'Outfit',sans-serif}
+.modal-content p{color:#666;margin-bottom:25px;font-size:15px}
+.modal-content a{display:inline-block;background:linear-gradient(135deg,#584CB5,#B31962);color:#fff;padding:14px 35px;border-radius:10px;text-decoration:none;font-weight:700;margin-bottom:12px;font-family:'Outfit',sans-serif}
+.modal-content .note{font-size:12px;color:#999}
+
+footer{background:#313155;color:#fff;padding:28px 40px;text-align:center;margin-top:55px}
+footer p{font-size:13px;opacity:0.7}
+
+@media(max-width:768px){
+.nav{padding:12px 20px}.nav-menu{gap:15px;font-size:12px}
+.hero{padding:40px 20px;min-height:380px}.hero h1{font-size:30px}.hero p{font-size:14px}
+.container{padding:0 20px}.section{padding:35px 0}.section h2{font-size:30px}
+.steps-grid,.para-grid,.pasos-grid{grid-template-columns:repeat(2,1fr)}
+.curriculum-grid,.formato-grid,.niveles-grid{grid-template-columns:1fr}
+.schedule-grid{grid-template-columns:repeat(2,1fr)}
+.payment-grid{grid-template-columns:1fr}
+.price-display{font-size:38px}
+}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+<div class="nav-logo">NeuroClick™</div>
+<div class="nav-menu">
+<a href="#como-funciona">Cómo Funciona</a>
+<a href="#programa">Programa</a>
+<a href="#formatos">Inscríbete</a>
+<a href="#" onclick="scrollToContact();return false;">Contacto</a>
+</div>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+<div class="hero-wrap">
+<h1>Cada Pregunta Bien Hecha<br>Multiplica Tu Tiempo y Tu Impacto</h1>
+<p>Aprende a usar la IA de forma estratégica, clara y personalizada. Sin importar tu área. Sin experiencia técnica previa.</p>
+<button class="btn-primary" onclick="document.getElementById('formatos').scrollIntoView({behavior:'smooth'})">Quiero Empezar →</button>
+</div>
+</div>
+
+<!-- CÓMO FUNCIONA -->
+<div class="container section" id="como-funciona">
+<div class="section-label">El Proceso</div>
+<h2>Cómo Funciona NeuroClick</h2>
+<div class="steps-grid">
+<div class="step">
+<div class="step-num" style="background:#584CB5">1</div>
+<h3 style="color:#584CB5">Elige Tu Nivel</h3>
+<p>Selecciona el programa que necesitas ahora. Puedes avanzar de nivel cuando estés lista.</p>
+</div>
+<div class="step">
+<div class="step-num" style="background:#B31962">2</div>
+<h3 style="color:#B31962">Regístrate</h3>
+<p>Crea tu cuenta en la plataforma con tu email y contraseña.</p>
+</div>
+<div class="step">
+<div class="step-num" style="background:#67D98D">3</div>
+<h3 style="color:#67D98D">Realiza el Pago</h3>
+<p>PayPal, Wise o DolarApp. Seguro y en minutos.</p>
+</div>
+<div class="step">
+<div class="step-num" style="background:#F7B955">4</div>
+<h3 style="color:#F7B955">Comienza Tu Clase 0</h3>
+<p>Diagnóstico personalizado. Diseñamos juntas tu plan exacto.</p>
+</div>
+</div>
+</div>
+
+<!-- PARA QUIÉN -->
+<div style="background:#f9f9f8;padding:55px 0">
+<div class="container">
+<div class="section-label">Para Quién Es</div>
+<h2 style="font-family:'Outfit',sans-serif;font-size:42px;font-weight:700;text-align:center;margin-bottom:25px">NeuroClick Es Para Ti Si...</h2>
+<div class="para-grid">
+<div class="para-card">
+<div class="icon">📝</div>
+<h3>Creas Contenido</h3>
+<p>Blogs, reels, guiones, publicaciones. La IA multiplica tu producción sin perder tu voz.</p>
+</div>
+<div class="para-card">
+<div class="icon">📊</div>
+<h3>Tienes un Negocio</h3>
+<p>Automatizas tareas, mejoras propuestas y tomas decisiones más rápidas con IA.</p>
+</div>
+<div class="para-card">
+<div class="icon">🌿</div>
+<h3>Lideras una Comunidad</h3>
+<p>Materiales, comunicación, contenido espiritual. La IA amplifica tu impacto.</p>
+</div>
+<div class="para-card">
+<div class="icon">🧠</div>
+<h3>Quieres Crecer</h3>
+<p>Claridad, planificación, reflexión. La IA como aliada en tu desarrollo personal.</p>
+</div>
+</div>
+</div>
+</div>
+
+<!-- PROGRAMA BASE -->
+<div class="container section" id="programa">
+<div class="section-label">Tu Aprendizaje</div>
+<h2>NeuroClick 2026 — El Programa Base</h2>
+<p class="section-intro">5 clases personalizadas según tu área. Cada tema se construye desde lo que tú necesitas — no desde un temario genérico.</p>
+<div class="curriculum-grid">
+<div class="curriculum-card">
+<h3>📋 Clase 0 — GRATIS</h3>
+<p><strong>Diagnóstico Personalizado</strong><br>Determinamos tu nivel, tu relación con IA y tu propósito real. Este diagnóstico define tu plan personal.</p>
+</div>
+<div class="curriculum-card">
+<h3>🧠 Clase 1</h3>
+<p><strong>Fórmula de 4 Pasos</strong><br>La anatomía de un prompt que funciona. Reducir alucinaciones. Saber para qué sirve cada IA.</p>
+</div>
+<div class="curriculum-card">
+<h3>⚙️ Clase 2</h3>
+<p><strong>Tu Equipo Asistente Personal</strong><br>ChatGPT, Claude y Perplexity con roles específicos. Personaliza tu equipo según tu área.</p>
+</div>
+<div class="curriculum-card">
+<h3>🌐 Clase 3</h3>
+<p><strong>Ecosistema Gemini</strong><br>Gemini en Google Drive, NotebookLM y los modelos integrados de Google.</p>
+</div>
+<div class="curriculum-card">
+<h3>🎨 Clase 4</h3>
+<p><strong>Imágenes con IA</strong><br>ChatGPT Image Generator, Gemini Images y conectores en Claude. Del texto a lo visual.</p>
+</div>
+<div class="curriculum-card">
+<h3>🚀 BONUS</h3>
+<p><strong>La Familia NeuroClick™</strong><br>VideoClick™, SoundClick™ y VisualClick™ — niveles especializados disponibles cuando estés lista.</p>
+</div>
+</div>
+</div>
+
+<!-- PROPUESTA ÚNICA -->
+<div class="container" style="padding-bottom:55px">
+<div class="propuesta">
+<div class="propuesta-badge">⚡ Lo que nos hace diferentes</div>
+<h3>Un Programa Construido Desde Ti — No Para Todos</h3>
+<p>NeuroClick es el único programa de IA donde cada clase se diseña en tiempo real según tu nivel, tu área y tu propósito.</p>
+<ul class="propuesta-list">
+<li>Clase 0 gratuita: diagnóstico real antes de comprometerte</li>
+<li>Tu programa único: construido en clase, no copiado de una plantilla</li>
+<li>Manuales propios: creados en clase basados en lo que tú necesitas</li>
+<li>Contenido actualizado: lo que funciona hoy, no hace 6 meses</li>
+<li>Tu área, tu ritmo, tu impacto: negocio, comunidad, contenido o espiritualidad</li>
+</ul>
+<div class="urgency">⏳ Oferta de lanzamiento — cuando escalemos, el precio sube.</div>
+</div>
+</div>
+
+<!-- ELIGE TU FORMATO -->
+<div class="container section" id="formatos">
+<div class="section-label">Tu Decisión</div>
+<h2>Elige Tu Formato</h2>
+<p class="section-intro">Ambos incluyen la Clase 0 gratis y un plan personalizado para ti.</p>
+<div class="formato-grid">
+<div class="formato-card active" id="card-sincronico" onclick="elegirFormato('sincronico')">
+<h3>🎥 Síncrono 1:1 por Zoom</h3>
+<ul>
+<li>5 encuentros en vivo conmigo</li>
+<li>90 minutos cada uno</li>
+<li>Clase 0 diagnóstico GRATIS</li>
+<li>Conexión directa con Ada</li>
+<li>Horarios México (Mar/Mié/Jue)</li>
+</ul>
+<button class="formato-btn" onclick="event.stopPropagation();elegirFormato('sincronico')">Elegir Síncrono →</button>
+</div>
+<div class="formato-card" id="card-asincronico" onclick="elegirFormato('asincronico')">
+<h3>📱 Asincrónico — A Tu Ritmo</h3>
+<ul>
+<li>4 clases grabadas</li>
+<li>3 meses de acceso completo</li>
+<li>Sin horarios fijos</li>
+<li>2 asesorías incluidas</li>
+<li>Materiales descargables</li>
+</ul>
+<button class="formato-btn" onclick="event.stopPropagation();irARegistro('asincronico')">Elegir Asincrónico →</button>
+</div>
+</div>
+
+<!-- HORARIOS SOLO SÍNCRONO -->
+<div id="syncSchedules" class="schedules-section">
+<h3>Elige Tu Horario (Zona México)</h3>
+<p style="color:#666;font-size:13px;margin-bottom:20px">El primer encuentro es diagnóstico + práctica. Los siguientes: 90 minutos de práctica real.</p>
+<div class="schedule-day">
+<h4>Martes</h4>
+<div class="schedule-grid">
+<button class="schedule-btn" onclick="selectSchedule(this,'Martes 5:00 PM')">5:00 PM</button>
+<button class="schedule-btn" onclick="selectSchedule(this,'Martes 6:00 PM')">6:00 PM</button>
+<button class="schedule-btn" onclick="selectSchedule(this,'Martes 7:00 PM')">7:00 PM</button>
+</div>
+</div>
+<div class="schedule-day">
+<h4>Miércoles</h4>
+<div class="schedule-grid">
+<button class="schedule-btn" onclick="selectSchedule(this,'Miércoles 6:00 PM')">6:00 PM</button>
+<button class="schedule-btn" onclick="selectSchedule(this,'Miércoles 7:00 PM')">7:00 PM</button>
+<button class="schedule-btn" style="visibility:hidden"></button>
+</div>
+</div>
+<div class="schedule-day">
+<h4>Jueves</h4>
+<div class="schedule-grid">
+<button class="schedule-btn" onclick="selectSchedule(this,'Jueves 5:00 PM')">5:00 PM</button>
+<button class="schedule-btn" onclick="selectSchedule(this,'Jueves 6:00 PM')">6:00 PM</button>
+<button class="schedule-btn" onclick="selectSchedule(this,'Jueves 7:00 PM')">7:00 PM</button>
+</div>
+</div>
+<div class="schedule-confirm">
+<p id="horario-seleccionado-txt" style="color:#584CB5;font-weight:600;min-height:20px"></p>
+<button class="btn-primary" onclick="irARegistro('sincronico')">Confirmar y Registrarme →</button>
+</div>
+</div>
+</div>
+
+<!-- PASOS DE INSCRIPCIÓN -->
+<div class="container">
+<div class="pasos-section">
+<h2>Tu Camino de Inscripción</h2>
+<div class="pasos-grid">
+<div class="paso">
+<div class="paso-num">1</div>
+<h4>Elige tu formato</h4>
+<p>Síncrono con horario o asincrónico a tu ritmo</p>
+</div>
+<div class="paso">
+<div class="paso-num">2</div>
+<h4>Regístrate</h4>
+<p>Crea tu cuenta con email y contraseña</p>
+</div>
+<div class="paso">
+<div class="paso-num">3</div>
+<h4>Realiza el pago</h4>
+<p>PayPal, Wise o DolarApp. $150 USD</p>
+</div>
+<div class="paso">
+<div class="paso-num">4</div>
+<h4>Accede al instante</h4>
+<p>Dashboard personal + Clase 0 agendada</p>
+</div>
+</div>
+</div>
+</div>
+
+<!-- PAGO -->
+<div class="container section" id="pago">
+<div class="pricing-section">
+<h2>Tu Inversión</h2>
+<div class="price-display">$150 USD</div>
+<div class="price-label">Precio de lanzamiento. Incluye certificado.</div>
+<p style="font-size:14px;color:#666;margin-bottom:20px">Primero regístrate. Luego elige tu método de pago.</p>
+<button id="btn-pagar" class="btn-primary" style="font-size:16px;padding:16px 45px">💳 Registrarme y Pagar</button>
+<div id="paypal-button-container"></div>
+<p style="font-size:13px;color:#888;margin:20px 0 10px">¿Prefieres otra forma de pago?</p>
+<div class="payment-grid">
+<div class="payment-option">
+<div class="icon">🌍</div>
+<h4>Wise</h4>
+<p>Transferencia internacional</p>
+<a href="https://wise.com/pay/me/adaelisd" target="_blank">Pagar con Wise →</a>
+</div>
+<div class="payment-option">
+<div class="icon">📱</div>
+<h4>DolarApp</h4>
+<p>Para México</p>
+<a href="https://wa.link/neuroclick" target="_blank">Contactar por WhatsApp →</a>
+</div>
+<div class="payment-option">
+<div class="icon">💬</div>
+<h4>WhatsApp</h4>
+<p>Habla directo con Ada</p>
+<a href="https://wa.link/neuroclick" target="_blank">Abrir WhatsApp →</a>
+</div>
+</div>
+</div>
+</div>
+
+<!-- FAMILIA NEUROCLICK -->
+<div style="background:#f9f9f8;padding:55px 0">
+<div class="container">
+<div class="section-label">Niveles Especializados</div>
+<h2 style="font-family:'Outfit',sans-serif;font-size:42px;font-weight:700;text-align:center;margin-bottom:10px">La Familia NeuroClick™</h2>
+<p style="font-size:15px;color:#666;text-align:center;max-width:650px;margin:0 auto 40px;line-height:1.8">Cada nivel es un superpoder nuevo. Avanza cuando estés lista — todos incluyen 4 clases 1:1 y Clase 0 de actualización.</p>
+
+<div class="niveles-grid">
+<div class="nivel-card" style="border-top:4px solid #584CB5">
+<div class="nivel-badge" style="color:#584CB5">VideoClick™ · 4 Clases</div>
+<h3>Videos con IA</h3>
+<div class="desc">Del texto al video profesional. Sin cámara. Sin experiencia técnica.</div>
+<ul>
+<li>Videos desde texto en minutos</li>
+<li>Storytelling visual con Grok</li>
+<li>Presentadores IA con HeyGen</li>
+<li>Sistema completo de producción</li>
+</ul>
+<div class="tools">Lumen · Grok · HeyGen · CapCut · Canva</div>
+<button class="btn-nivel" style="background:linear-gradient(135deg,#584CB5,#313155)" onclick="irARegistro('bonus-videos')">Quiero VideoClick™ →</button>
+</div>
+
+<div class="nivel-card" style="border-top:4px solid #B31962">
+<div class="nivel-badge" style="color:#B31962">SoundClick™ · 4 Clases</div>
+<h3>Audio con IA</h3>
+<div class="desc">Tu voz, tu música y tu podcast. Producción profesional sin estudio.</div>
+<ul>
+<li>Podcast desde cualquier texto</li>
+<li>Clona tu voz en cualquier idioma</li>
+<li>Música para videos y meditaciones</li>
+<li>Sistema de audio con uso comercial</li>
+</ul>
+<div class="tools">ElevenLabs · Fishia · Suno · NotebookLM · IA Studio</div>
+<button class="btn-nivel" style="background:linear-gradient(135deg,#B31962,#584CB5)" onclick="irARegistro('soundclick')">Quiero SoundClick™ →</button>
+</div>
+
+<div class="nivel-card" style="border-top:4px solid #67D98D">
+<div class="nivel-badge" style="color:#67D98D">VisualClick™ · 4 Clases</div>
+<h3>Imágenes y Presentaciones</h3>
+<div class="desc">Presentaciones en un prompt. Imágenes que detienen el scroll.</div>
+<ul>
+<li>Presentaciones con Gamma y Pomelli</li>
+<li>PDFs y publicaciones personalizadas</li>
+<li>Materiales educativos descargables</li>
+<li>Sistema visual completo</li>
+</ul>
+<div class="tools">Gamma · Pomelli · Canva · NotebookLM</div>
+<button class="btn-nivel" style="background:linear-gradient(135deg,#67D98D,#584CB5)" onclick="irARegistro('visualclick')">Quiero VisualClick™ →</button>
+</div>
+</div>
+
+<!-- MASTERCLICK -->
+<div class="section-label" style="margin-top:40px">Nivel Estratégico</div>
+<h2 style="font-family:'Outfit',sans-serif;font-size:36px;font-weight:700;text-align:center;margin-bottom:10px">Masterclick Marketing</h2>
+<p style="font-size:15px;color:#666;text-align:center;max-width:620px;margin:0 auto 30px">Del contenido a la conversión real. Para quien ya tiene su mensaje y quiere construir el embudo completo.</p>
+
+<div class="niveles-grid">
+<div class="nivel-card" style="border-top:4px solid #584CB5">
+<div class="nivel-badge" style="color:#584CB5">Módulo 1 · 4 Clases</div>
+<h3>Marketing 1</h3>
+<div class="desc">El punto de partida. Quién eres, a quién le hablas y qué dices.</div>
+<ul>
+<li>Diagnóstico de tu marca actual</li>
+<li>Avatar / Buyer Persona y mensaje central</li>
+<li>Identidad visual con intención</li>
+<li>Plan de contenido 30 días</li>
+</ul>
+<button class="btn-nivel" style="background:linear-gradient(135deg,#584CB5,#313155)" onclick="irARegistro('masterclick1')">Quiero Marketing 1 →</button>
+</div>
+
+<div class="nivel-card" style="border-top:4px solid #B31962;box-shadow:0 4px 20px rgba(179,25,98,0.15);position:relative">
+<div style="position:absolute;top:-11px;left:50%;transform:translateX(-50%);background:#B31962;color:#fff;padding:4px 16px;border-radius:20px;font-size:10px;font-weight:700">MÁS POPULAR</div>
+<div class="nivel-badge" style="color:#B31962">Módulo 2 · 4 Clases</div>
+<h3>Marketing 2</h3>
+<div class="desc">Del contenido a la venta. El camino que lleva a tu cliente a decir que sí.</div>
+<ul>
+<li>Embudo: dónde se rompe y cómo arreglarlo</li>
+<li>Landing page de 6 secciones publicada</li>
+<li>Mensajes que cierran sin presionar</li>
+<li>Campaña de lanzamiento activa</li>
+</ul>
+<button class="btn-nivel" style="background:linear-gradient(135deg,#B31962,#584CB5)" onclick="irARegistro('masterclick2')">Quiero Marketing 2 →</button>
+</div>
+
+<div class="nivel-card disabled" style="border-top:4px solid #ccc">
+<div class="nivel-badge" style="color:#999">Módulo 3 · Próximamente</div>
+<h3 style="color:#999">Marketing 3</h3>
+<div class="desc" style="color:#bbb">Estrategia avanzada de crecimiento y automatización con IA.</div>
+<ul>
+<li style="color:#ccc">En desarrollo</li>
+<li style="color:#ccc">Próximamente</li>
+</ul>
+<button class="btn-nivel" disabled>Próximamente</button>
+</div>
+</div>
+</div>
+</div>
+
+<!-- FAQ -->
+<div class="container section">
+<div class="section-label">Preguntas Frecuentes</div>
+<h2>¿Tienes Dudas?</h2>
+<div style="max-width:750px;margin:0 auto">
+<div class="faq-item">
+<div class="faq-question" onclick="toggleFaq(this)">¿Necesito experiencia previa con IA? <span class="faq-toggle">+</span></div>
+<div class="faq-answer">No. NeuroClick está diseñado para personas sin experiencia técnica. La Clase 0 es precisamente para determinar tu punto de partida real y construir desde ahí.</div>
+</div>
+<div class="faq-item">
+<div class="faq-question" onclick="toggleFaq(this)">¿Cuál es la diferencia entre síncrono y asincrónico? <span class="faq-toggle">+</span></div>
+<div class="faq-answer">El síncrono son encuentros en vivo 1:1 por Zoom conmigo — en tiempo real, con preguntas y práctica guiada. El asincrónico son clases grabadas que puedes ver cuando quieras durante 3 meses, con 2 asesorías incluidas para resolver dudas.</div>
+</div>
+<div class="faq-item">
+<div class="faq-question" onclick="toggleFaq(this)">¿Qué pasa si elijo síncrono y no puedo en ese horario? <span class="faq-toggle">+</span></div>
+<div class="faq-answer">Coordinas directamente con Ada. Si tienes un imprevisto, reagendamos. El programa 1:1 tiene esa flexibilidad.</div>
+</div>
+<div class="faq-item">
+<div class="faq-question" onclick="toggleFaq(this)">¿Puedo cambiar de nivel después? <span class="faq-toggle">+</span></div>
+<div class="faq-answer">Sí. Puedes avanzar a VideoClick™, SoundClick™, VisualClick™ o Masterclick cuando termines tu nivel actual. Cada nivel incluye una Clase 0 de actualización como bono de bienvenida.</div>
+</div>
+<div class="faq-item">
+<div class="faq-question" onclick="toggleFaq(this)">¿En qué moneda es el pago y qué métodos aceptan? <span class="faq-toggle">+</span></div>
+<div class="faq-answer">El precio es $150 USD. Aceptamos PayPal (con o sin cuenta), Wise para transferencias internacionales, y DolarApp para México. También puedes escribir por WhatsApp para coordinar.</div>
+</div>
+</div>
+</div>
+
+<!-- MODAL REGISTRO -->
+<div id="modal-registro" class="modal" onclick="if(event.target===this)this.classList.remove('active')">
+<div class="modal-content">
+<h2>Primero Regístrate</h2>
+<p>Crea tu cuenta para continuar con el pago y acceder a tu plataforma de aprendizaje.</p>
+<a href="/auth.html">Crear Mi Cuenta →</a>
+<p class="note">¿Ya tienes cuenta? <a href="/auth.html" style="color:#584CB5">Inicia sesión aquí</a></p>
+<button onclick="document.getElementById('modal-registro').classList.remove('active')" style="margin-top:15px;background:#f0f0f0;color:#666;border:none;padding:10px 25px;border-radius:8px;cursor:pointer;font-size:13px;width:100%">✕ Volver a la página</button>
+</div>
+</div>
+
+<footer>
+<p>&copy; 2026 NeuroClick™ | Tu inteligencia amplificada | El líder eres tú | Las IAs te apoyan</p>
+</footer>
+
+<script>
+const SUPABASE_URL = 'https://eoceqdgeptdevudoniuk.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVvY2VxZGdlcHRkZXZ1ZG9uaXVrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk0NTkyMDksImV4cCI6MjA5NTAzNTIwOX0.8qKGJfLzZUydzWuG-n78_8Rs9X1ZHkzBkhV98vtCdtM';
+
+let selectedSchedule = null;
+let selectedPrograma = 'neuroclick';
+let selectedFormato = 'sincronico';
+
+function elegirFormato(formato) {
+  selectedFormato = formato;
+  document.querySelectorAll('.formato-card').forEach(c => c.classList.remove('active'));
+  document.getElementById('card-' + formato)?.classList.add('active');
+  const schedules = document.getElementById('syncSchedules');
+  if (formato === 'sincronico') {
+    schedules.style.display = 'block';
+    schedules.scrollIntoView({behavior:'smooth', block:'nearest'});
+  } else {
+    schedules.style.display = 'none';
+    irARegistro('asincronico');
+  }
+  localStorage.setItem('formato_seleccionado', formato);
+  localStorage.setItem('programa_seleccionado', 'neuroclick');
+}
+
+function selectSchedule(button, schedule) {
+  document.querySelectorAll('.schedule-btn').forEach(b => b.classList.remove('selected'));
+  button.classList.add('selected');
+  selectedSchedule = schedule;
+  localStorage.setItem('horario_seleccionado', schedule);
+  document.getElementById('horario-seleccionado-txt').textContent = '✓ Horario seleccionado: ' + schedule;
+}
+
+function irARegistro(programa) {
+  // Mapear correctamente cada nivel
+  const mapaPrograma = {
+    'sincronico': 'neuroclick',
+    'asincronico': 'neuroclick',
+    'neuroclick': 'neuroclick',
+    'bonus-videos': 'bonus-videos',
+    'soundclick': 'soundclick',
+    'visualclick': 'visualclick',
+    'masterclick1': 'masterclick1',
+    'masterclick2': 'masterclick2'
+  };
+
+  const programaFinal = mapaPrograma[programa] || 'neuroclick';
+  const formatoFinal = (programa === 'asincronico') ? 'asincronico' : (programa === 'sincronico' ? 'sincronico' : 'asincronico');
+
+  localStorage.setItem('programa_seleccionado', programaFinal);
+  localStorage.setItem('formato_seleccionado', formatoFinal);
+
+  const userEmail = localStorage.getItem('user_email');
+  if (!userEmail) {
+    document.getElementById('modal-registro').classList.remove('active');
+    setTimeout(() => document.getElementById('modal-registro').classList.add('active'), 10);
+  } else {
+    window.location.href = '/dashboard.html';
+  }
+}
+
+function irAPago(modulo) {
+  irARegistro(modulo);
+}
+
+document.getElementById('btn-pagar').addEventListener('click', function() {
+  const userEmail = localStorage.getItem('user_email');
+  if (!userEmail) {
+    document.getElementById('modal-registro').classList.add('active');
+  } else {
+    document.getElementById('btn-pagar').style.display = 'none';
+    document.getElementById('paypal-button-container').style.display = 'block';
+    renderPayPalButton();
+  }
+});
+
+function renderPayPalButton() {
+  if (window.paypal && document.getElementById('paypal-button-container').innerHTML === '') {
+    paypal.Buttons({
+      style: { layout: 'vertical', color: 'blue', shape: 'rect', label: 'pay' },
+      createOrder: function(data, actions) {
+        return actions.order.create({
+          purchase_units: [{ amount: { value: '150.00', currency_code: 'USD' }, description: 'NeuroClick 2026 - Programa Completo' }],
+          payment_source: { paypal: { experience_context: { user_action: 'PAY_NOW', payment_method_preference: 'UNRESTRICTED' } } }
+        });
+      },
+      onApprove: async function(data, actions) {
+        return actions.order.capture().then(async function(orderData) {
+          const userEmail = localStorage.getItem('user_email');
+          if (userEmail) {
+            try {
+              await fetch(`${SUPABASE_URL}/rest/v1/pagos`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'apikey': SUPABASE_ANON_KEY, 'Authorization': `Bearer ${SUPABASE_ANON_KEY}` },
+                body: JSON.stringify({ nombre: userEmail, monto: 150, moneda: 'USD', metodo_pago: 'PayPal', transaccion_id: orderData.id, estado: 'completado', fecha_pago: new Date().toISOString() })
+              });
+              await fetch(`${SUPABASE_URL}/rest/v1/estudiantes?email=eq.${encodeURIComponent(userEmail)}`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json', 'apikey': SUPABASE_ANON_KEY, 'Authorization': `Bearer ${SUPABASE_ANON_KEY}` },
+                body: JSON.stringify({
+                  pagado: true,
+                  fecha_pago: new Date().toISOString(),
+                  tipo_programa: localStorage.getItem('programa_seleccionado') || 'neuroclick',
+                  horario: localStorage.getItem('horario_seleccionado') || 'por definir'
+                })
+              });
+              alert('¡Pago completado! Accediendo a tu plataforma...');
+              setTimeout(() => window.location.href = '/dashboard.html', 1500);
+            } catch (error) {
+              alert('Pago completado pero hubo un error en el registro. Por favor contacta a Ada.');
+            }
+          }
+        });
+      },
+      onError: function() { alert('Hubo un error en el pago. Intenta de nuevo.'); },
+      onCancel: function() { alert('Pago cancelado. Puedes intentar de nuevo cuando quieras.'); }
+    }).render('#paypal-button-container');
+  }
+}
+
+function toggleFaq(el) {
+  const answer = el.nextElementSibling;
+  const toggle = el.querySelector('.faq-toggle');
+  const isOpen = answer.classList.contains('open');
+  document.querySelectorAll('.faq-answer').forEach(a => a.classList.remove('open'));
+  document.querySelectorAll('.faq-toggle').forEach(t => t.textContent = '+');
+  if (!isOpen) { answer.classList.add('open'); toggle.textContent = '−'; }
+}
+
+function scrollToContact() {
+  const overlay = document.createElement('div');
+  overlay.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.5);z-index:999';
+  const modal = document.createElement('div');
+  modal.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:#fff;padding:35px;border-radius:12px;box-shadow:0 10px 40px rgba(0,0,0,0.3);z-index:1000;max-width:380px;text-align:center';
+  modal.innerHTML = `<h2 style="color:#584CB5;margin-bottom:15px;font-family:Outfit,sans-serif">Contacto</h2><p style="color:#666;margin-bottom:25px">¿Prefieres hablar antes de decidir?</p><div style="display:flex;gap:12px;justify-content:center;margin-bottom:15px"><button onclick="navigator.clipboard.writeText('neuroclick@liderazgoespiritual.com');this.textContent='¡Copiado!';setTimeout(()=>this.textContent='📧 Email',2000)" style="background:#584CB5;color:#fff;padding:11px 22px;border-radius:6px;border:none;font-weight:600;cursor:pointer;font-size:13px">📧 Email</button><a href="https://wa.link/neuroclick" target="_blank" style="background:#67D98D;color:#fff;padding:11px 22px;border-radius:6px;text-decoration:none;font-weight:600;font-size:13px">📱 WhatsApp</a></div><button onclick="this.closest('div').remove();document.querySelector('.contact-overlay').remove()" style="background:#eee;color:#666;border:none;padding:9px 20px;border-radius:6px;cursor:pointer;width:100%;font-size:13px">Cerrar</button>`;
+  overlay.className = 'contact-overlay';
+  overlay.onclick = () => { overlay.remove(); modal.remove(); };
+  document.body.appendChild(overlay);
+  document.body.appendChild(modal);
+}
+
+window.addEventListener('load', () => {
+  if (window.paypal) renderPayPalButton();
+  document.getElementById('syncSchedules').style.display = 'block';
+});
+</script>
+</body>
+</html>
