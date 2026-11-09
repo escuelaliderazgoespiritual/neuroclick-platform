@@ -1,0 +1,681 @@
+<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Mi programa · NeuroClick</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,500;6..72,600&family=Instrument+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap">
+<style>
+/* DESIGN PLAN
+   Subject: 4-class async program, translator/interpreter building her Facebook presence with 4 AIs.
+   Identity: a "bridge" — steel-blue structure, saffron for the single highlight, cool neutrals.
+   Type: Newsreader (headings, editorial) + Instrument Sans (UI/body) + JetBrains Mono (prompts).
+   Each AI keeps a fixed color across the whole page (green/purple/blue/orange). */
+:root{
+  --bg:#f2f5f8; --surface:#ffffff; --surface2:#e9eef3; --ink:#12263a; --muted:#566879; --line:#d5dde5;
+  --accent:#0e5a8a; --accent-ink:#ffffff; --hi:#c77d00; --hi-bg:#fdf1d6;
+  --ok:#2a7a4b; --bad:#b3362b; --bad-bg:#fbe4e1; --good-bg:#e1f2e8;
+  --gpt:#2e7d32; --gpt-bg:#e3f1e4; --cl:#6b3fa0; --cl-bg:#ece3f6; --gem:#1a56b0; --gem-bg:#e0e9f8; --ppx:#b45309; --ppx-bg:#fbe9d6;
+  --code:#f6f8fa;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0c151e; --surface:#142130; --surface2:#1b2c3d; --ink:#e7eef5; --muted:#9bb0c3; --line:#2a3d50;
+  --accent:#5ab0e6; --accent-ink:#06121c; --hi:#f0b84a; --hi-bg:#3a2d10;
+  --ok:#62c286; --bad:#f08a80; --bad-bg:#3b1a17; --good-bg:#12301f;
+  --gpt:#6fcf75; --gpt-bg:#14301a; --cl:#b99be3; --cl-bg:#2a1d3d; --gem:#7fb0f5; --gem-bg:#14274a; --ppx:#f0a35e; --ppx-bg:#3a230f;
+  --code:#0f1b28; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0c151e; --surface:#142130; --surface2:#1b2c3d; --ink:#e7eef5; --muted:#9bb0c3; --line:#2a3d50;
+  --accent:#5ab0e6; --accent-ink:#06121c; --hi:#f0b84a; --hi-bg:#3a2d10;
+  --ok:#62c286; --bad:#f08a80; --bad-bg:#3b1a17; --good-bg:#12301f;
+  --gpt:#6fcf75; --gpt-bg:#14301a; --cl:#b99be3; --cl-bg:#2a1d3d; --gem:#7fb0f5; --gem-bg:#14274a; --ppx:#f0a35e; --ppx-bg:#3a230f;
+  --code:#0f1b28; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:'Instrument Sans',system-ui,sans-serif;font-size:16px;line-height:1.6;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 64px}
+.wrap{max-width:860px;margin:0 auto}
+h1,h2,h3{font-family:'Newsreader',Georgia,serif;font-weight:600;line-height:1.2;text-wrap:balance;margin:0}
+header.top{padding:28px 0 8px}
+.eyebrow{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:600}
+h1{font-size:clamp(28px,5vw,40px);margin-top:6px}
+.sub{color:var(--muted);margin:8px 0 0;max-width:62ch}
+.overall{display:flex;align-items:center;gap:12px;margin-top:16px;font-size:14px;color:var(--muted)}
+.bar{flex:1;height:8px;background:var(--surface2);border-radius:99px;overflow:hidden;min-width:0}
+.bar i{display:block;height:100%;background:var(--accent);width:0;transition:width .3s}
+nav.tabs{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);padding:10px 0;display:flex;gap:6px;overflow-x:auto;border-bottom:1px solid var(--line);margin-top:12px}
+nav.tabs button{flex:0 0 auto;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:10px;padding:8px 14px;font:inherit;font-size:14px;font-weight:500;cursor:pointer;text-align:left;line-height:1.25}
+nav.tabs button small{display:block;color:var(--muted);font-weight:400;font-size:11px}
+nav.tabs button[aria-selected="true"]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+nav.tabs button[aria-selected="true"] small{color:inherit;opacity:.85}
+main{padding-top:24px;display:flex;flex-direction:column;gap:24px}
+.goal{background:var(--surface);border:1px solid var(--line);border-left:5px solid var(--hi);border-radius:12px;padding:18px 20px}
+.goal h2{font-size:26px;margin:4px 0 8px}
+.goal .tag{font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--hi);font-weight:600}
+.goal p{margin:6px 0}
+.deliv{margin-top:10px;padding:10px 12px;background:var(--hi-bg);border-radius:8px;font-size:14px}
+.cprog{display:flex;align-items:center;gap:10px;margin-top:12px;font-size:13px;color:var(--muted)}
+.step{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:18px 20px;display:flex;flex-direction:column;gap:12px;min-width:0}
+.step.done{border-color:var(--ok)}
+.sh{display:flex;gap:12px;align-items:flex-start}
+.sh input[type=checkbox]{width:22px;height:22px;margin-top:3px;accent-color:var(--accent);flex:0 0 auto;cursor:pointer}
+.sh h3{font-size:20px}
+.min{font-size:12px;color:var(--muted);font-weight:500;margin-top:2px}
+.body p{margin:0 0 10px}.body p:last-child{margin:0}
+.body ul,.body ol{margin:6px 0 10px;padding-left:22px}.body li{margin:3px 0}
+.pc{border:1px solid var(--line);border-radius:10px;overflow:hidden;min-width:0}
+.pc header{display:flex;gap:10px;align-items:center;justify-content:space-between;padding:8px 12px;flex-wrap:wrap}
+.pc .who{font-weight:600;font-size:13px}
+.pc .why{font-size:13px;padding:8px 12px 0;color:var(--muted)}
+.pc pre{margin:0;padding:12px;white-space:pre-wrap;word-break:break-word;font-family:'JetBrains Mono',ui-monospace,monospace;font-size:12.5px;line-height:1.55;background:var(--code);color:var(--ink);margin-top:8px}
+.pc button{border:1px solid currentColor;background:transparent;color:inherit;border-radius:8px;padding:5px 12px;font:inherit;font-size:13px;font-weight:600;cursor:pointer}
+.pc.gpt header{background:var(--gpt-bg);color:var(--gpt)}.pc.gpt{border-color:var(--gpt)}
+.pc.cl header{background:var(--cl-bg);color:var(--cl)}.pc.cl{border-color:var(--cl)}
+.pc.gem header{background:var(--gem-bg);color:var(--gem)}.pc.gem{border-color:var(--gem)}
+.pc.ppx header{background:var(--ppx-bg);color:var(--ppx)}.pc.ppx{border-color:var(--ppx)}
+.wow{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.wow>div{border-radius:10px;padding:12px 14px;font-size:14px;min-width:0}
+.wow .w{background:var(--bad-bg);border:1px solid var(--bad)}.wow .s{background:var(--good-bg);border:1px solid var(--ok)}
+.wow b{display:block;font-size:11px;letter-spacing:.1em;text-transform:uppercase;margin-bottom:4px}
+.wow .w b{color:var(--bad)}.wow .s b{color:var(--ok)}
+.wowt{font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--hi);font-weight:600}
+.call{background:var(--bad-bg);border:1px solid var(--bad);border-radius:10px;padding:10px 14px;font-size:14px}
+.call b{color:var(--bad)}
+.ex{border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:10px;padding:12px 14px;background:var(--surface2);font-size:14px;margin:8px 0;line-height:1.6}.ex b{color:var(--accent)}
+.q{background:var(--hi-bg);border-radius:10px;padding:14px;border:1px solid var(--hi)}
+.q .ql{font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--hi);font-weight:600}
+.q p{margin:4px 0 8px;font-weight:500}
+textarea,input[type=text],input[type=number],select{width:100%;font:inherit;font-size:15px;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:8px 10px}
+textarea{min-height:76px;resize:vertical}
+.check{display:flex;gap:10px;align-items:flex-start;padding:6px 0;border-bottom:1px dashed var(--line)}
+.check:last-child{border:0}.check input{width:20px;height:20px;margin-top:2px;accent-color:var(--accent);flex:0 0 auto}
+.check span{font-size:15px}.check.on span{color:var(--muted);text-decoration:line-through}
+.tblw{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th,td{padding:8px 10px;border-bottom:1px solid var(--line);text-align:left;vertical-align:middle}
+th{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+td select,td input{min-width:70px}
+.res{margin-top:10px;padding:12px;border-radius:10px;background:var(--surface2);font-size:14px}
+.offer{border:1px solid var(--line);border-radius:10px;padding:12px;display:flex;flex-direction:column;gap:8px}
+.sl{display:grid;grid-template-columns:150px 1fr 28px;gap:10px;align-items:center;font-size:13px}
+.sl input{accent-color:var(--accent);width:100%}
+.score{font-family:'Newsreader',serif;font-size:26px;color:var(--accent)}
+.btn{border:0;background:var(--accent);color:var(--accent-ink);border-radius:10px;padding:10px 18px;font:inherit;font-weight:600;cursor:pointer}
+.btn.alt{background:transparent;color:var(--accent);border:1px solid var(--accent)}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.src{font-size:13px;color:var(--muted)}
+footer{margin-top:32px;font-size:12px;color:var(--muted);text-align:center}
+@media(max-width:560px){.wow{grid-template-columns:1fr}.sl{grid-template-columns:1fr 1fr 28px}.sl span:first-child{grid-column:1/-1}}
+
+.vids{margin-top:14px;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px 18px}
+.vids h3{font-family:var(--serif,inherit);font-size:18px;margin:0 0 10px}
+.vl{border:1px solid var(--line);border-radius:10px;margin-top:8px;overflow:hidden;background:var(--surface)}
+.vh{display:flex;gap:12px;align-items:center;padding:12px 14px;cursor:pointer;font-size:14px;background:var(--surface2)}
+.vh[aria-expanded="true"]{background:var(--accent);color:var(--accent-ink)}
+.vh b{min-width:34px}.vh span{flex:1}.vh em{font-style:normal;font-size:12px;opacity:.8}
+.vl video{display:block;width:100%;aspect-ratio:16/9;background:#000}
+.dl{display:inline-block;margin-top:14px;background:var(--hi);color:#fff;border-radius:8px;padding:10px 16px;font-weight:600;font-size:14px;text-decoration:none}
+body{margin:0}.topbar{max-width:980px;margin:0 auto;padding:12px 16px 0;font:500 13px "Instrument Sans",system-ui,sans-serif}.topbar a{color:var(--accent);text-decoration:none}
+</style></head><body>
+<script>try{if(!localStorage.getItem("access_token")){location.replace("/auth.html")}}catch(e){}</script>
+<div class="topbar"><a href="/dashboard.html">← Volver a mi panel</a></div>
+
+<div class="wrap">
+<header class="top">
+  <div class="eyebrow" id="eyebrow"></div>
+  <h1 id="h1"></h1>
+  <p class="sub" id="sub"></p>
+  <div class="overall"><span id="ovl">Avance total</span><div class="bar"><i id="ovb"></i></div><span id="ovp">0%</span></div>
+</header>
+<nav class="tabs" id="tabs" role="tablist"></nav>
+<main id="main"></main>
+<footer>Tu avance y tus respuestas se guardan solo en este navegador. Usa «Copiar resumen» en el tablero para llevártelos.</footer>
+</div>
+
+<script>
+/* ============ CONFIG: cambia estos datos para reutilizar el programa con otra alumna ============ */
+var CONFIG = {
+  name: "Julie Burns",
+  first: "Julie",
+  business: "The Communication Bridge",
+  location: "Santa Rosa, CA (Sonoma, Marin y Napa)",
+  site: "https://www.thecommunicationbridge.net/",
+  fb: "https://www.facebook.com/TheCommunicationBridgeSC",
+  bio: "ATA-certified Spanish<>English translator (30+ years) and certified interpreter (20+ years) who also teaches interpreter training courses",
+  audA: "Institutions and agencies (hospitals, courts, schools, agencies) that hire translation and interpreting",
+  audB: "Freelance and aspiring interpreters who want training",
+  audAshort: "Instituciones y agencias", audBshort: "Intérpretes freelance",
+  offers: ["Certified translation", "Interpreting services", "Interpreter training courses"],
+  platformNext: "Instagram"
+};
+
+var CLASSES = [
+/* ===================== CLASE 1 ===================== */
+{ id:"clase-1", n:1, title:"Tu equipo de 4 IAs", short:"Base",
+  goal:"Dejar tu equipo de IA configurado y probado: 4 asistentes que ya saben quién eres, cómo escribes y qué NO deben hacer.",
+  deliv:"Entregable: tu equipo personalizado (4 IAs) + tu primera comparación real, con una IA elegida para cada tarea.",
+  steps:[
+  { id:"c1s1", t:"Conoce a tu equipo: cada IA tiene un rol", min:10,
+    body:`<p>No uses las cuatro igual. Usa cada una donde es mejor:</p>
+    <ul><li><b style="color:var(--gpt)">ChatGPT = ejecutor.</b> Redacta rápido, produce calendarios, borradores y variaciones.</li>
+    <li><b style="color:var(--cl)">Claude = estratega.</b> Piensa en profundidad, hace buenas preguntas, analiza tu web y tu página, escribe tus instrucciones de proyecto.</li>
+    <li><b style="color:var(--gem)">Gemini = comodín creativo.</b> Imagen, video y respaldo cuando se acaban los mensajes de otra. Tiene selector de modelos.</li>
+    <li><b style="color:var(--ppx)">Perplexity = biblioteca.</b> Investiga con fuentes citadas. Si no cita, no lo uses como dato.</li></ul>
+    <p><b>Límites gratis:</b> los mensajes se acaban. Claude renueva aprox. cada 5 horas. Planifica así: pensar con Claude, producir con ChatGPT, y si uno se agota, pasa al siguiente.</p>
+    <p><b>Cada una guarda tu contexto en un lugar distinto:</b> Proyectos (ChatGPT y Claude), Cuaderno (Gemini), Proyecto (Perplexity).</p>` },
+  { id:"c1s2", t:"Personaliza cada IA con quién eres", min:25,
+    body:`<p>Abre cada una y pega su prompt en la sección de personalización. Cambia lo que no sea cierto para ti. Este es el paso que separa respuestas genéricas de respuestas que suenan a ti.</p>
+    <div class="call"><b>Error común:</b> no escribir lo que la IA NO debe hacer. Sin eso, inventará testimonios, credenciales o cifras. Esa línea te protege.</div>`,
+    prompts:[
+    {ai:"gpt",label:"ChatGPT · Personalización",why:"Pégalo en Ajustes > Personalización (instrucciones personalizadas).",text:`About me: I'm {{name}}, {{bio}}. I run {{business}} in {{location}}. English is my native language; I work between English and Spanish.
+
+How to respond: American English, direct and warm, short paragraphs, no filler. If my request is vague, ask me ONE clarifying question before answering. Give me ready-to-use text, not theory.
+
+What NOT to do: never invent facts, credentials, testimonials, statistics or client names about me or my business. If you are guessing, say "I'm guessing". Don't use hype or clichés ("unlock", "game-changer", "in today's fast-paced world").`},
+    {ai:"cl",label:"Claude · Instrucciones del Proyecto (versión inicial)",why:"Crea un Proyecto llamado con tu negocio y pega esto en sus instrucciones. En la Clase 2 Claude lo mejorará.",text:`Role: You are my senior marketing strategist and thinking partner.
+
+Context: I'm {{name}}, {{bio}}. My business is {{business}} ({{site}}). Facebook page: {{fb}}. I serve {{location}}. No ad budget: everything is organic.
+
+Task: Help me improve my online presence, reach a larger audience and convert it into inquiries. Ask questions before advising. Challenge weak ideas.
+
+What NOT to do: don't invent testimonials, credentials or numbers. Don't give generic social media tips. Don't write in a corporate or salesy tone.`},
+    {ai:"gem",label:"Gemini · Cuaderno / instrucciones",why:"Úsalo para imagen, video y como respaldo.",text:`I'm {{name}}, {{bio}}. Business: {{business}}. Style: clear, professional, warm, bilingual-friendly. When I ask for images or video ideas, keep them credible for a professional language-services brand (no stock-photo cliché, no fake people claiming to be clients). Ask me before assuming. Never invent facts about me.`},
+    {ai:"ppx",label:"Perplexity · Instrucciones del Proyecto",why:"Un Proyecto para investigar tu mercado.",text:`Act as a research analyst for {{business}}, a translation and interpreting business in {{location}}. Always cite sources, prefer primary or official sources, separate facts from opinions, and tell me when something can't be verified. Focus: language-services market, how institutions hire interpreters and translators, and what works on Facebook for local professional services.`}
+    ] },
+  { id:"c1s3", t:"La estructura que cambia todo: Rol, Contexto, Tarea, Qué no hacer", min:15,
+    body:`<p>Toda instrucción potente tiene cuatro partes. Mira la diferencia con la misma petición:</p>`,
+    wow:{t:"WOW por contraste", weak:"“Give me ideas for my Facebook page.”<br><br>Resultado: 10 consejos que sirven para una panadería o para ti. Nada específico.", strong:"“Role: strategist. Context: certified interpreter, 20+ years, Sonoma County, no ad budget. Task: 3 post ideas that make a hospital administrator trust me. Not: stock advice or invented testimonials.”<br><br>Resultado: ideas con tu voz, tu mercado y un objetivo."},
+    prompts:[
+    {ai:"cl",label:"Plantilla maestra (cópiala en tu libreta)",why:"Úsala en cualquier IA, para cualquier tarea.",text:`Role: [who the AI should be]
+Context: [who I am, who I serve, what I've already done, my constraints]
+Task: [exactly what I need, in what format, how long]
+What NOT to do: [what to avoid, what not to invent]`}
+    ] },
+  { id:"c1s4", t:"Reto de 10 minutos: la misma pregunta a las 4 IAs", min:15,
+    body:`<p>Pega <b>la misma petición</b> en las cuatro y compara. Anota en la tabla cuál te dio la mejor respuesta y por qué. Esa decisión será tu mapa de uso para todo el programa.</p>`,
+    prompts:[
+    {ai:"cl",label:"Prompt de prueba (idéntico en las 4)",why:"Pégalo tal cual en ChatGPT, Claude, Gemini y Perplexity.",text:`Role: marketing strategist for a local professional-services business.
+Context: I'm {{name}}, {{bio}}. I have {{business}} in {{location}}. My Facebook page has had very few posts and no defined strategy. No ad budget.
+Task: Give me the 3 most important things I should fix first on my Facebook page, ranked, each in one sentence plus one concrete action I can do this week.
+What NOT to do: no generic advice, no invented numbers, no more than 150 words.`}
+    ],
+    tool:"compare" },
+  { id:"c1s5", t:"Tu primera decisión estratégica", min:5,
+    q:{id:"q1", text:"¿Cuál de las 4 IAs te hizo pensar algo que no habías considerado? Escribe cuál y qué fue. Esa será tu estratega principal."} }
+  ] },
+
+/* ===================== CLASE 2 ===================== */
+{ id:"clase-2", n:2, title:"Auditoría y decisión", short:"Tu voz",
+  goal:"Saber con datos dónde estás hoy y decidir a quién le hablas primero. Terminas con un diagnóstico y las instrucciones de tu proyecto, escritas por Claude con tu información real.",
+  deliv:"Entregable: auditoría de tu web y de tu Facebook + decisión de público prioritario + instrucciones de proyecto listas.",
+  steps:[
+  { id:"c2s1", t:"Auditoría de tu sitio web con Claude (técnica «solo preguntas»)", min:20,
+    body:`<p>Tu web ya está bien diseñada y tiene buena información. Ahora Claude debe entenderla. Primero que pregunte, después que opine.</p>
+    <div class="call"><b>Cuidado:</b> si la IA no puede abrir la URL, pega el texto de tus páginas principales. Nunca aceptes un análisis de una página que no pudo leer.</div>`,
+    prompts:[
+    {ai:"cl",label:"Claude · Auditoría con preguntas primero",why:"La IA te entrevista antes de dar consejos. Responde una pregunta a la vez.",text:`Role: senior brand and marketing strategist.
+Context: I'm {{name}}, {{bio}}. My website is {{site}}. If you can't open it, tell me and I'll paste the text.
+Task: First, read my site. Then ONLY ask me questions, one at a time, up to 10, to understand my real positioning: who my best clients are, what makes them choose me, what I'm proudest of, what I want more of and less of. Don't give advice yet. After my 10th answer, give me: (1) what my site says about me, (2) what's missing, (3) the 3 strongest assets I should build on.
+What NOT to do: don't invent anything not on my site or in my answers; no generic tips.`}
+    ] },
+  { id:"c2s2", t:"Auditoría de tu Facebook con capturas de pantalla", min:20,
+    body:`<p>Facebook bloquea que las IAs lean tu página directamente. La solución: dale lo que ves tú.</p>
+    <ol><li>Captura tu portada, foto de perfil, la sección Información y los últimos 8 a 10 posts.</li><li>En <b>Meta Business Suite &gt; Estadísticas</b>, captura alcance, visitas y seguidores de los últimos 28 días.</li><li>Sube todo a Claude y pega tu nombre de usuario y los textos de los posts.</li></ol>
+    <p>Lo que encontramos al revisar tu página: último movimiento el 16 de agosto con solo 2 publicaciones, estilo y marca consistentes, texto bilingüe y <b>ningún objetivo definido para publicar</b>. Ese último punto es la oportunidad.</p>`,
+    prompts:[
+    {ai:"cl",label:"Claude · Auditoría de Facebook",why:"Adjunta las capturas antes de enviar.",text:`Role: social media strategist who audits professional-services pages.
+Context: I'm {{name}} ({{business}}). Facebook blocks AI crawlers, so I'm attaching screenshots of my cover, profile photo, About section, my last posts and my 28-day insights. Page: {{fb}}.
+Task: Audit the page in this order: (1) first-impression test (what does a stranger understand in 5 seconds?), (2) profile completeness, (3) content pattern (frequency, types, language, goal), (4) engagement signals, (5) top 5 fixes ranked by impact vs effort.
+What NOT to do: don't judge anything you can't see in the screenshots; mark any assumption as an assumption; no generic advice.`},
+    {ai:"ppx",label:"Perplexity · Referentes del sector",why:"Con fuentes. Verifica antes de usar cualquier dato.",text:`Find 5 translation or interpreting businesses or interpreter-training providers in the United States that communicate well on Facebook or LinkedIn. For each: who they target, what they post, how they present credentials, and what call to action they use. Cite sources. Don't include anything you can't link to.`}
+    ] },
+  { id:"c2s3", t:"Decisión guiada: ¿a quién le hablas primero?", min:15,
+    body:`<p>Tienes dos públicos legítimos. Hablarle a los dos a la vez diluye el mensaje. Puntúa del 1 al 5 y mira cuál sale adelante.</p>
+    <p><b>A:</b> <span data-aud="A"></span><br><b>B:</b> <span data-aud="B"></span></p>`,
+    tool:"matrix",
+    q:{id:"q2", text:"Si solo pudieras conseguir un tipo de cliente nuevo en los próximos 90 días, ¿cuál sería y por qué? La matriz orienta, tú decides."} },
+  { id:"c2s4", t:"Suma tus notas sobre Sinek y Miller y deja que Claude escriba tus instrucciones", min:20,
+    body:`<p>Agrega a Contexto, dentro de tu Proyecto de Claude, una nota tuya de una página con lo que entendiste de las ideas de Simon Sinek (<i>Start With Why</i>) y Donald Miller (<i>Building a StoryBrand</i>) y cómo se aplican a tu negocio. No subas los PDF de los libros: tienen derechos de autor, y tus propias notas son más tuyas. Luego pídele que redacte las instrucciones con tu auditoría.</p>
+    <p>Si a ChatGPT se le acaban los mensajes gratis, pega el mismo prompt en Gemini.</p>`,
+    prompts:[
+    {ai:"cl",label:"Claude · Redacta las instrucciones de tu proyecto",why:"Usa lo que ya sabe de ti. Revisa y corrige antes de guardar.",text:`Role: expert prompt architect.
+Context: Based on everything in this conversation (my website audit, my Facebook audit, and my decision to prioritize [A or B]) and on my notes about the Sinek and Miller ideas in this project.
+Task: Write the project instructions for my marketing assistant using Role, Context, Task and What NOT to do. Include: my voice, my priority audience, my offers, my brand colors and tone from the website, the rule that every post must lead traffic to my website, and a rule to always ask 1-2 questions before producing content.
+What NOT to do: no invented facts, no generic phrases, no testimonials. Keep it under 500 words.`}
+    ] },
+  { id:"c2s5", t:"Pega las instrucciones en tus otros proyectos", min:10,
+    body:`<p>Copia la versión final en ChatGPT (Proyecto), Gemini (Cuaderno) y Perplexity (Proyecto), ajustando el rol de cada una: ejecutora, creativa e investigadora.</p>` }
+  ] },
+
+/* ===================== CLASE 3 ===================== */
+{ id:"clase-3", n:3, title:"Tu identidad visual y tu campaña de 15 días", short:"Cómo te ven",
+  goal:"Que cada publicación se reconozca como tuya en 5 segundos. Defines tu branding, diseñas tus plantillas, escribes hooks y llamados a la acción que puedes medir, armas una campaña de 15 días con estrategia y la programas en Meta Business Suite.",
+  deliv:"Entregable: tu Brand Kit, 3 plantillas hechas con una imagen de ChatGPT o con Canva conectado, tu primera publicación completa, hooks y CTA medibles, calendario de 15 días y las publicaciones programadas.",
+  steps:[
+  { id:"c3s1", t:"Tu branding: de tu web a un Brand Kit de una página", min:25,
+    body:`<p><b>Branding no es un logo.</b> Es el conjunto de decisiones (colores, tipografía, tono, mensaje) que hace que alguien te reconozca antes de leer tu nombre. Cuando todo se ve y suena igual, al cerebro le cuesta menos procesarte y te recuerda mejor.</p>
+    <p>En la Clase 2, Claude ya sacó los colores y la propuesta de valor de tu web. Hoy los convertimos en reglas que cualquiera pueda seguir.</p>`,
+    prompts:[
+    {ai:"cl",label:"Claude · Tu Brand Kit en una página",why:"Parte de tu web y de tu auditoría. Si no puede leer los colores, adjunta una captura.",text:`Role: senior brand strategist.
+Context: I'm {{name}}, {{business}}, website {{site}}. Use my project instructions, my website audit and my priority audience from Class 2.
+Task: Build my Brand Kit on one page: (1) 3 brand adjectives and 3 things the brand is NOT; (2) color palette taken from my website, with HEX codes and when to use each (background, text, accent, button); (3) typography: the closest free Google Fonts pairing for headings and body; (4) voice rules: 5 do's and 5 don'ts, each with an example sentence in English and in Spanish; (5) one-line message (max 12 words) for my priority audience; (6) logo and photo rules: where the logo goes, minimum size, which photos to avoid; (7) a 5-second test: what a stranger must understand when they see any of my posts.
+What NOT to do: don't invent colors that aren't on my site (ask me for a screenshot if you can't read them); no clichés; no stock-photo ideas with fake clients.`}
+    ],
+    wow:{t:"WOW por contraste", weak:"Tres publicaciones seguidas con colores, letras y tono distintos: nadie sabe de quién son.", strong:"Las mismas tres publicaciones con tu paleta, tus dos tipografías y tu voz: se reconocen incluso sin tu nombre."},
+    q:{id:"q3", text:"Tu mensaje de una línea: ¿lo diría un cliente si te recomienda? Si no, reescríbelo con sus palabras."} },
+  { id:"c3s2", t:"Crea tus 3 plantillas: imagen con un prompt o con Canva conectado", min:40,
+    body:`<p>No diseñas 7 publicaciones: diseñas <b>3 plantillas</b> y las repites con distinto contenido. Así ganas velocidad y reconocimiento.</p>
+    <ul><li><b>A · Consejo educativo:</b> un error común o un dato útil.</li><li><b>B · Mito y realidad:</b> corrige algo que tus clientes creen.</li><li><b>C · Invitación:</b> servicio, taller o cómo contactarte.</li></ul>
+    <p><b>Dos caminos para crear el diseño.</b> Pruébalos los dos y quédate con el que te sirva.</p>
+    <div class="tblw"><table><tr><th></th><th>Opción 1 · Imagen con un solo prompt</th><th>Opción 2 · Canva conectado</th></tr>
+    <tr><td><b>Dónde</b></td><td>Dentro de ChatGPT, sin conectar nada</td><td>ChatGPT o Claude conectados a Canva</td></tr>
+    <tr><td><b>Resultado</b></td><td>Una imagen completa, lista en segundos</td><td>Un diseño de Canva con texto real</td></tr>
+    <tr><td><b>Texto</b></td><td>Es parte de la imagen: puede salir con errores y no se edita</td><td>Se edita como cualquier texto de Canva</td></tr>
+    <tr><td><b>Tu marca</b></td><td>La pides en el prompt (colores HEX)</td><td>La pides en el prompt y la ajustas en Canva con tu Kit de marca</td></tr>
+    <tr><td><b>Ideal para</b></td><td>Fondos, ilustraciones y ideas rápidas</td><td>Plantillas que vas a repetir y editar</td></tr>
+    <tr><td><b>Requisito</b></td><td>Tu cuenta de ChatGPT</td><td>Conectar tu cuenta de Canva (puede requerir plan de pago)</td></tr></table></div>
+    <p><b>Opción 1.</b> Escribe el prompt, revisa <b>cada letra</b> del resultado y, si hay un error, pide: «corrige solo la palabra ___ y no cambies nada más». Si el texto sale mal otra vez, pide el fondo sin texto y escríbelo tú en Canva.</p>
+    <p><b>Opción 2 · Cómo conectar Canva (una sola vez).</b> Un conector es un permiso que le das a una IA para trabajar dentro de otra aplicación, en tu nombre.</p>
+    <ol><li><b>En ChatGPT:</b> abre un chat nuevo y busca <b>Herramientas &gt; Usar conectores</b> (o en tu perfil: <b>Configuración &gt; Apps y conectores</b>). Elige <b>Canva</b> y aprueba los permisos. Para usarlo, escribe <b>@Canva</b> y lo que quieres.</li><li><b>En Claude:</b> abre un chat nuevo, pulsa <b>Search and tools / Manage connectors</b> (el nombre en tu idioma puede variar), busca <b>Canva</b>, pulsa <b>Connect</b> y luego <b>Allow</b>. Para usarlo, pídele: «Usa Canva para crear…».</li></ol>
+    <ul><li>Los nombres de los menús y los planes requeridos cambian. Si no ves el conector, no pasa nada: usa la Opción 1 y arma la plantilla en Canva directamente.</li><li>Trabaja un diseño a la vez. Abre el resultado en Canva para ajustarlo con tu Kit de marca y descargarlo.</li><li>Si Canva ofrece un elemento premium, elige uno gratuito.</li></ul>`,
+    prompts:[
+    {ai:"gpt",label:"ChatGPT · Opción 1: la imagen completa con un solo prompt",why:"Sin conectar nada. Pega tus colores HEX. Revisa cada letra del resultado.",text:`Create a Facebook feed post image, vertical 1080x1350, for a professional translation and interpreting business.
+Style: calm, professional, minimal. Use ONLY these colors: [PASTE YOUR HEX CODES].
+Layout: a headline at the top in a clean sans-serif font: "Before you book an interpreter". Below it, three short lines (max 5 words each): "Language and dialect", "In person or remote", "Context of the visit". A small footer with my website: {{site}}.
+What NOT to do: no people, no photos of clients, no logos, no statistics, no extra text. Write the text exactly as given and check the spelling.`},
+    {ai:"gpt",label:"ChatGPT · Fondo sin texto (si el texto sale mal)",why:"El texto lo escribes tú en Canva. Así evitas errores de letras.",text:`Create an abstract background image for a Facebook post, vertical 1080x1350, using only these colors: [PASTE YOUR HEX CODES]. Style: calm, professional, minimal shapes. No text, no letters, no people, no logos.`},
+    {ai:"gpt",label:"ChatGPT + @Canva · Opción 2: Plantilla A",why:"Escribe @Canva al inicio. Pega tu Brand Kit (HEX y tipografías) al final.",text:`@Canva Create a Facebook feed post design, vertical 1080x1350, as a reusable template.
+Role: art director for a professional-services brand.
+Context: I'm {{name}}, {{business}}. My Brand Kit is pasted below. This is Template A: an educational tip.
+Task: Design it with real, editable text: a short headline (max 8 words), three short bullet points, and a small footer with my name and website. Use ONLY my HEX colors and the closest available version of my two fonts. Give me 2 layout options and ask which one to refine.
+What NOT to do: no photos or illustrations of people, no fake clients, no statistics, no more than 2 fonts and 3 colors, no invented logo, no long paragraphs.
+
+[PASTE YOUR BRAND KIT: HEX COLORS + FONTS]`},
+    {ai:"cl",label:"Claude + Canva · Opción 2: Plantilla A",why:"El mismo pedido, en Claude con el conector de Canva activo. Pega tu Brand Kit al final.",text:`Use Canva to create a Facebook feed post design, vertical 1080x1350, as a reusable template.
+Role: art director for a professional-services brand.
+Context: I'm {{name}}, {{business}}. My Brand Kit is pasted below. This is Template A: an educational tip.
+Task: Design it with real, editable text: a short headline (max 8 words), three short bullet points, and a small footer with my name and website. Use ONLY my HEX colors and the closest available version of my two fonts. Give me 2 layout options and ask which one to refine.
+What NOT to do: no photos or illustrations of people, no fake clients, no statistics, no more than 2 fonts and 3 colors, no invented logo, no long paragraphs.
+
+[PASTE YOUR BRAND KIT: HEX COLORS + FONTS]`},
+    {ai:"gpt",label:"ChatGPT o Claude + Canva · Plantillas B y C",why:"En el mismo chat, cuando ya te gustó la A. Pide una a la vez.",text:`Using Canva and the same colors, fonts and style as Template A, create two more templates, one at a time:
+(B) Myth vs. reality: a "Myth" block on top and a "Reality" block below, each max 12 words, plus my website in the footer.
+(C) Invitation: a headline, one line of text and ONE call-to-action line, plus my website.
+Same rules: editable text, my HEX colors only, no people, no statistics, max 2 fonts and 3 colors. Start with B and wait for my feedback before C.`}
+    ],
+    call:"Al conectar Canva le das permiso para crear y editar diseños por ti. Conecta solo tus propias cuentas, revisa lo que apruebas y no pongas datos de clientes, pacientes o casos en un diseño. Puedes quitar el permiso cuando quieras en la configuración de conectores. Tampoco uses personas generadas como si fueran clientes o colegas reales." },
+  { id:"c3s3", t:"Cómo se construye una publicación: hook, valor y CTA", min:40,
+    body:`<p>Una buena publicación no es texto bonito: tiene <b>5 piezas</b>, cada una con un trabajo.</p>
+    <div class="tblw"><table><tr><th>Pieza</th><th>Qué hace</th><th>Regla</th></tr>
+    <tr><td><b>1 · Hook</b></td><td>Detiene el scroll</td><td>Primera línea, máximo 12 palabras, específica</td></tr>
+    <tr><td><b>2 · Tensión</b></td><td>Hace que se sientan vistos</td><td>1 o 2 líneas con algo que tu cliente ya vive</td></tr>
+    <tr><td><b>3 · Valor</b></td><td>Da algo útil ahora</td><td>UNA idea, no cinco</td></tr>
+    <tr><td><b>4 · Prueba</b></td><td>Da motivos para creerte</td><td>Solo tu experiencia real y comprobable</td></tr>
+    <tr><td><b>5 · CTA</b></td><td>Pide una acción</td><td>Una sola, empieza con verbo y se mide</td></tr></table></div>
+    <p><b>Ejemplo completo (Plantilla A).</b> Es un ejemplo para mostrar: valídalo con tu propia experiencia antes de publicar.</p>
+    <div class="ex"><b>1 · Hook</b> Before you book a medical interpreter, answer these 3 questions.<br><span class="src">Antes de contratar a un intérprete médico, responde estas 3 preguntas.</span><br><b>2 · Tensión</b> Appointments run smoother when the interpreter knows what to expect.<br><b>3 · Valor</b> 1) Which language and dialect does the patient speak? 2) Is it in person or remote, and how long is it? 3) Can the interpreter get a short briefing on the type of visit? (Never patient records: only the setting.)<br><b>4 · Prueba</b> 30+ years as an ATA-certified translator and 20+ as a certified interpreter.<br><b>5 · CTA</b> Save this checklist for your next booking.<br><span class="src">Métrica: guardados.</span></div>
+    <p><b>Frases que llaman la atención (hooks).</b> Elige una fórmula y adáptala a tu experiencia.</p>
+    <div class="tblw"><table><tr><th>Fórmula</th><th>Ejemplos para tu página</th></tr>
+    <tr><td><b>Dato que sorprende</b></td><td>Speaking two languages doesn't make someone an interpreter.<br>A word-for-word translation can still get the meaning wrong.</td></tr>
+    <tr><td><b>Error común</b></td><td>A common mistake when booking an interpreter: waiting until the day before.</td></tr>
+    <tr><td><b>Pregunta silenciosa</b></td><td>Not sure if you need a translator or an interpreter?<br>Can your bilingual staff handle that meeting?</td></tr>
+    <tr><td><b>Antes y después</b></td><td>Before: waiting for someone who "speaks a little Spanish." After: a clear language plan.</td></tr>
+    <tr><td><b>Mito y realidad</b></td><td>Myth: translating and interpreting are the same. Reality: one is written, the other is spoken.</td></tr>
+    <tr><td><b>Número y promesa</b></td><td>3 questions to answer before booking an interpreter.</td></tr>
+    <tr><td><b>Llama a tu público</b></td><td>If you manage a clinic with Spanish-speaking patients, read this.</td></tr></table></div>
+    <p><b>Prueba tu hook con 4 preguntas:</b></p>
+    <ul><li>¿Es específico, o podría ser de cualquiera?</li><li>¿Se nota para quién es?</li><li>¿Promete algo que sí puedo cumplir?</li><li>¿Se entiende en 3 segundos, sin leer más?</li></ul>
+    <p><b>Evita:</b> «Happy Monday!», «Contact us for professional translation services», «We are pleased to announce…». Son vagos y nadie se detiene. Tampoco cuentes casos de clientes o pacientes reales, ni sin nombre: tu ética profesional lo protege y tu credibilidad también.</p>
+    <p><b>El CTA: una acción, un número.</b> Pide una sola cosa y que sea fácil. Cada una se mide con un dato de Meta.</p>
+    <div class="tblw"><table><tr><th>Si tu objetivo es…</th><th>Frase de ejemplo</th><th>Lo mides con…</th></tr>
+    <tr><td>Que te escriban</td><td>Send me a message with the word CHECKLIST.</td><td>Conversaciones iniciadas</td></tr>
+    <tr><td>Que visiten tu web</td><td>Read the full guide on my website (link below).</td><td>Clics en el enlace</td></tr>
+    <tr><td>Conversar</td><td>Which one do you need? Tell me in the comments.</td><td>Comentarios</td></tr>
+    <tr><td>Que te recuerden</td><td>Save this for your next booking.</td><td>Guardados</td></tr>
+    <tr><td>Que te recomienden</td><td>Share it with the person who books your vendors.</td><td>Veces compartido</td></tr></table></div>`,
+    prompts:[
+    {ai:"gpt",label:"ChatGPT · Arma una publicación completa, paso a paso",why:"Te entrevista primero y después construye las 5 piezas. Pega tu Brand Kit al final.",text:`Role: social media copywriter for a translator and interpreter. Write in my voice.
+Context: I'm {{name}}, {{business}}. Priority audience and Brand Kit are pasted below. Organic only, no ad budget.
+Task: Help me build ONE Facebook post. First ask me 2 short questions: the topic and the objective (message, website click, comment, save or share). Then write the post with these 5 labeled parts: (1) Hook, max 12 words; (2) Tension, 1-2 lines; (3) Value, ONE idea; (4) Proof, using only experience I confirm; (5) ONE CTA, plus the exact Meta metric that measures it. Give me 3 alternative hooks. Text under 120 words, American English with one Spanish line.
+What NOT to do: no invented statistics or testimonials, no stories about real clients or patients, no promises I can't keep, no more than 3 hashtags.
+
+[PASTE BRAND KIT + PRIORITY AUDIENCE HERE]`},
+    {ai:"gpt",label:"ChatGPT · Hooks y CTA medibles",why:"Para tener un banco de hooks y CTA. Pega tu Brand Kit al final.",text:`Role: direct-response social copywriter for professional services.
+Context: {{name}}, {{business}}. Priority audience and Brand Kit pasted below. Organic only, no ad budget.
+Task: (1) Write 10 hooks (first line, max 12 words) for my audience, using 5 formulas, 2 each: surprising fact, common mistake, silent question, before/after, myth vs. fact. (2) Write 6 CTAs, one per objective: get a message, click to my website, comment, save, share, book a call. For each CTA tell me the exact metric in Meta Business Suite that measures it and how to compare it with my own last 28 days (don't give generic industry benchmarks). (3) Remind me: each post has ONE CTA.
+What NOT to do: no clickbait I can't deliver on, no invented statistics, nothing untrue about my experience, no stories about real clients or patients.
+
+[PASTE BRAND KIT + PRIORITY AUDIENCE HERE]`}
+    ],
+    wow:{t:"WOW por contraste", weak:"«Happy Monday! Contact us for professional translation services.» Nadie se detiene y no hay nada que medir.", strong:"«Speaking two languages doesn't make someone an interpreter. 3 questions to ask before you book one. Save this checklist.» Un hook, una idea, un CTA y una métrica."},
+    q:{id:"q3b", text:"Escribe tus 3 hooks favoritos. Marca el que promete algo que sí puedes cumplir y bórralo si no."} },
+  { id:"c3s4", t:"Tu campaña de 15 días, con estrategia", min:30,
+    body:`<p>Siete publicaciones en 15 días es un ritmo realista para una persona sola. La campaña tiene <b>3 fases</b>, porque nadie compra a quien acaba de conocer:</p>
+    <ul><li><b>Días 1 a 5 · Identidad:</b> quién eres y a quién ayudas.</li><li><b>Días 6 a 10 · Confianza:</b> educas y muestras cómo piensas.</li><li><b>Días 11 a 15 · Invitación:</b> propones el siguiente paso.</li></ul>
+    <p>Cada publicación tiene su fase, su hook, su plantilla, su único CTA y su métrica. <b>Así se ve la campaña terminada</b> (ejemplo para mostrar: valida cada tema con tu experiencia):</p>
+    <div class="tblw"><table><tr><th>Día</th><th>Fase</th><th>Plantilla</th><th>Hook</th><th>CTA</th><th>Métrica</th></tr>
+    <tr><td>1</td><td>Identidad</td><td>A</td><td>30+ years translating. Here is what I check first on any project.</td><td>Save this for your next project.</td><td>Guardados</td></tr>
+    <tr><td>3</td><td>Identidad</td><td>A</td><td>Why I became an interpreter.</td><td>Which language did you grow up with? Tell me below.</td><td>Comentarios</td></tr>
+    <tr><td>5</td><td>Identidad</td><td>B</td><td>Myth: being bilingual makes you an interpreter.</td><td>Share it with someone who hires language services.</td><td>Veces compartido</td></tr>
+    <tr><td>7</td><td>Confianza</td><td>A</td><td>3 questions to answer before booking an interpreter.</td><td>Save this checklist.</td><td>Guardados</td></tr>
+    <tr><td>10</td><td>Confianza</td><td>B</td><td>Translator or interpreter? Which one do you need?</td><td>Tell me which one in the comments.</td><td>Comentarios</td></tr>
+    <tr><td>12</td><td>Invitación</td><td>A</td><td>What a clear language plan looks like for a clinic or a school.</td><td>Read the full guide on my website.</td><td>Clics en el enlace</td></tr>
+    <tr><td>15</td><td>Invitación</td><td>C</td><td>Serving Spanish speakers in Sonoma, Marin or Napa? Let's talk.</td><td>Send me a message with the word PLAN.</td><td>Conversaciones iniciadas</td></tr></table></div>`,
+    prompts:[
+    {ai:"gpt",label:"ChatGPT · Campaña de 15 días",why:"Pega tu Brand Kit, tus hooks y tus CTA del paso anterior.",text:`Role: social media strategist and copywriter in my voice.
+Context: {{name}}, {{business}}. Goal: strengthen my identity and send qualified traffic to {{site}}. Organic only. Brand Kit, hooks and CTAs are pasted below.
+Task: Create a 15-day campaign with 7 posts in 3 phases (days 1-5 Identity, days 6-10 Trust, days 11-15 Invitation). For each post: day, phase, pillar (Authority, Education, Human or Invitation), hook, full text (under 120 words, American English with a Spanish line when useful), ONE CTA, the exact metric that measures it, which template to use (A, B or C), the website page to link, and a visual note. Present everything as a table first, then the full texts one by one. Don't suggest posting times: I'll take them from my Meta audience insights.
+What NOT to do: no invented testimonials or numbers, no stories about real clients or patients, no hashtag walls (max 3), nothing that contradicts my Brand Kit.
+
+[PASTE BRAND KIT + HOOKS + CTAS HERE]`},
+    {ai:"gpt",label:"ChatGPT + @Canva · Diseña la publicación 1",why:"Repite este prompt con cada publicación. Abre cada diseño en Canva para revisarlo y descargarlo.",text:`@Canva Create the design for post 1 of my campaign using my Template A (same colors, fonts and layout). Replace the placeholders with this exact text: [PASTE THE HEADLINE AND BULLETS OF POST 1]. Keep the text short and editable. Ask me before changing anything else.`}
+    ],
+    wow:{t:"WOW por contraste", weak:"Publicar «Happy Monday! Contact us for translation» cuando te acuerdas.", strong:"Cada publicación con fase, hook, único CTA y una métrica: al día 15 sabes qué funcionó y por qué."} },
+  { id:"c3s5", t:"Programa tus publicaciones en Meta Business Suite", min:35,
+    body:`<p>Programar te permite dedicar una tarde y publicar durante 15 días. Entra a <b>business.facebook.com</b> con tu página. Meta cambia los nombres de las opciones con frecuencia: si no encuentras algo, pregúntale a Claude con una captura.</p>
+    <ol><li>Abre <b>Meta Business Suite</b> y elige tu página.</li><li>Busca <b>Crear publicación</b> (o Planner / Calendario).</li><li>Sube la imagen de tu plantilla y pega el texto con el hook.</li><li>Agrega el enlace de tu web en el texto y revisa la vista previa.</li><li>En <b>Programar</b> elige fecha y hora. Para la hora, mira <b>Estadísticas &gt; Audiencia</b> y busca los momentos con más actividad de tu gente. No adivines.</li><li>Confirma y revisa que aparezca en el calendario.</li></ol>
+    <p>Pide a Perplexity que verifique las especificaciones y reglas actuales de Meta antes de empezar.</p>`,
+    prompts:[
+    {ai:"ppx",label:"Perplexity · Cómo programar y medir hoy",why:"Verifica con fuentes oficiales. Las plataformas cambian.",text:`How do I schedule a post on a Facebook Page using Meta Business Suite today? Include: where to find the scheduling option, current image size recommendations for feed posts, how far ahead I can schedule, and where to see post-level metrics (reach, link clicks, conversations started, saves, shares). Use official Meta help pages and cite each source with its date. Flag anything that may have changed recently.`}
+    ],
+    tool:"checks",
+    checks:[
+      "Mi Brand Kit está guardado (colores con HEX, 2 tipografías, voz y mensaje de una línea)",
+      "Mis 3 plantillas (A, B, C) están hechas en Canva y guardadas",
+      "Tengo mis hooks y mis CTA medibles, uno por publicación",
+      "Mi calendario de 15 días con 7 publicaciones está completo",
+      "Revisé las estadísticas de audiencia para elegir los horarios",
+      "Programé la publicación 1 en Meta Business Suite",
+      "Programé las publicaciones 2 a 7 (o las que alcance hoy)",
+      "Vi mis publicaciones programadas en el calendario",
+      "Abrí mi página en una ventana de incógnito y anoté qué entiendo en 5 segundos",
+      "Exporté mis estadísticas de los últimos 28 días como línea base"
+    ],
+    call:"Nunca publiques testimonios, reseñas, certificaciones o cifras que no puedas probar. Si la IA te los ofrece, bórralos." }
+  ] },
+
+/* ===================== CLASE 4 ===================== */
+{ id:"clase-4", n:4, title:"Posicionamiento y conversión", short:"Por qué tú",
+  goal:"Pasar de «me conocen» a «me eligen». Defines por qué eres la opción preferida, ordenas tus ofertas, revisas los resultados de los 15 días y decides escalar, ajustar o cambiar.",
+  deliv:"Entregable: escalera de ofertas + decisión basada en datos + extensión a Instagram + plan 30-60-90.",
+  steps:[
+  { id:"c4s1", t:"Ecuación de valor (Hormozi): ¿qué oferta es más irresistible?", min:20,
+    body:`<p>Valor percibido = <b>(resultado soñado × probabilidad percibida)</b> ÷ <b>(tiempo × esfuerzo)</b>. Sube lo de arriba o baja lo de abajo. Califica cada oferta del 1 al 10.</p>`,
+    tool:"value",
+    q:{id:"q4", text:"¿Qué factor es el más fácil de mejorar en tu oferta con más potencial? (por ejemplo: probabilidad percibida con casos reales y credenciales visibles)"} },
+  { id:"c4s2", t:"Tu escalera de ofertas", min:20,
+    body:`<p>Una persona no pasa de «te vi en Facebook» a un contrato grande. Necesita escalones: contenido gratis, algo pequeño, algo principal.</p>`,
+    prompts:[
+    {ai:"cl",label:"Claude · Escalera de ofertas",why:"Basada en tu ecuación de valor.",text:`Role: offer strategist (Alex Hormozi value equation).
+Context: {{name}}, {{business}}. Offers: {{offers}}. My value-equation scores are below. Priority audience: [A or B].
+Task: Build an offer ladder with 4 steps: free (content/lead magnet), entry, core, premium. For each: name, promise, who it is for, how it is delivered, and the post type that leads to it. Then say which factor of the equation to improve first and how.
+What NOT to do: no discounts as a strategy, no invented prices or testimonials.
+
+[PASTE YOUR SCORES]`}
+    ] },
+  { id:"c4s3", t:"Revisión de los 15 días: escalar, ajustar o cambiar", min:25,
+    body:`<p>Antes de decidir mira los datos del tablero. Anota tu línea base (día 0) y el día 15. Después pide a Claude una lectura honesta.</p>
+    <p>Reglas: si algo crece, <b>escala</b>; si hay señales pero poca respuesta, <b>ajusta</b>; si no hay ni una señal, <b>cambia</b> el enfoque. Con poca muestra, no saques conclusiones fuertes.</p>`,
+    prompts:[
+    {ai:"cl",label:"Claude · Lectura de resultados",why:"Pega el resumen que sale del tablero (botón «Copiar resumen»).",text:`Role: marketing analyst, honest and direct.
+Context: 15-day identity campaign for {{business}} on Facebook, organic only. Data below (baseline vs day 15).
+Task: Tell me (1) what moved and what didn't, (2) which pillar and post type worked best, (3) whether the sample is big enough to conclude anything, (4) my decision: scale, adjust or pivot, with 3 concrete actions for the next 15 days.
+What NOT to do: don't flatter me, don't over-interpret small numbers, don't invent causes you can't see.
+
+[PASTE SUMMARY HERE]`}
+    ],
+    q:{id:"q5", text:"¿Qué publicación te trajo la mejor señal (comentario, mensaje, guardado, visita a tu web) y qué la hizo distinta?"} },
+  { id:"c4s4", t:"Expande a Instagram sin empezar de cero", min:20,
+    body:`<p>Usa el mismo Brand Kit y los mismos hooks. Cambia el formato, no la estrategia: más visual, más corto, con Reels.</p>`,
+    prompts:[
+    {ai:"gpt",label:"ChatGPT · Adaptación a Instagram",why:"Ejecutor.",text:`Role: Instagram copywriter.
+Context: my best-performing Facebook posts and my 4 pillars [paste]. {{business}}, organic only.
+Task: Adapt my 3 best posts into Instagram: one carousel (slide-by-slide text), one Reel script (hook, beats, CTA) and one caption with a profile-link CTA. Add a bio of max 150 characters and 3 highlight names.
+What NOT to do: don't copy and paste the Facebook text; no invented claims.`},
+    {ai:"gem",label:"Gemini · Visuales",why:"Plantilla visual coherente.",text:`Design a simple, consistent visual system for {{business}} on Instagram: carousel cover style, text hierarchy, 3 color combinations using my brand colors from {{site}}, and 5 cover ideas for the pillars. Keep it professional and credible.`}
+    ] },
+  { id:"c4s5", t:"Plan 30-60-90 y métricas que importan", min:20,
+    body:`<p>En orgánico, mira primero señales de interés real: <b>mensajes, consultas, clics a tu web, guardados y comentarios con contenido</b>. Los «me gusta» solos engañan.</p>`,
+    prompts:[
+    {ai:"cl",label:"Claude · Plan 30-60-90",why:"Con tu decisión del paso anterior.",text:`Role: marketing strategist.
+Context: {{name}}, {{business}}. My decision after 15 days: [scale/adjust/pivot]. Offer ladder and pillars above. Time available: [hours per week].
+Task: Build a 30-60-90 day plan: goals, weekly rhythm, content mix, one measurable target per month (inquiries, messages, website clicks), and what I should STOP doing.
+What NOT to do: don't plan more than my time allows; no vanity metrics as goals.`}
+    ],
+    tool:"checks",
+    checks:[
+      "Escalera de ofertas definida",
+      "Decisión escalar/ajustar/cambiar escrita",
+      "Pilares y mensaje adaptados a Instagram",
+      "Plan 30-60-90 guardado en mi Proyecto de Claude",
+      "Fecha de revisión del día 30 en mi calendario"
+    ] }
+  ] }
+];
+
+/* ============================================================ */
+var TOOLS_META = {gpt:"ChatGPT · Ejecutor", cl:"Claude · Estratega", gem:"Gemini · Creativo", ppx:"Perplexity · Investigación"};
+var KEY = "cb-programa-v1";
+var S = {done:{}, checks:{}, ans:{}, matrix:{}, value:null, metrics:{}, cmp:{}};
+try{ var raw = localStorage.getItem(KEY); if(raw){ var p = JSON.parse(raw); for(var k in p){ S[k]=p[k]; } } }catch(e){}
+function save(){ try{ localStorage.setItem(KEY, JSON.stringify(S)); }catch(e){} }
+function esc(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
+function fill(t){ return t.replace(/\{\{(\w+)\}\}/g,function(m,k){ var v=CONFIG[k]; if(k==="offers") v=CONFIG.offers.join(", "); return v!==undefined?v:m; }); }
+
+document.getElementById("eyebrow").textContent = "Programa de 4 clases · " + CONFIG.business;
+document.getElementById("h1").textContent = "Tu puente hacia más clientes, con 4 IAs";
+document.getElementById("sub").textContent = CONFIG.first + ", cada clase termina con algo concreto que puedes usar mañana. Todo orgánico, sin presupuesto de anuncios.";
+
+var tabsEl = document.getElementById("tabs"), main = document.getElementById("main");
+var VIEWS = CLASSES.map(function(c){ return {id:c.id, label:"Clase "+c.n, small:c.short}; }).concat([{id:"tablero", label:"Tablero", small:"Resultados"}]);
+VIEWS.forEach(function(v){
+  var b=document.createElement("button"); b.setAttribute("role","tab"); b.dataset.id=v.id;
+  b.innerHTML = esc(v.label)+"<small>"+esc(v.small)+"</small>";
+  b.onclick=function(){ location.hash = v.id; };
+  tabsEl.appendChild(b);
+});
+
+function classProgress(c){
+  var total=0, d=0;
+  c.steps.forEach(function(s){ total++; if(S.done[s.id]) d++; });
+  return {d:d,total:total,pct: total?Math.round(100*d/total):0};
+}
+function overall(){
+  var t=0,d=0; CLASSES.forEach(function(c){ var p=classProgress(c); t+=p.total; d+=p.d; });
+  var pct=t?Math.round(100*d/t):0;
+  document.getElementById("ovb").style.width=pct+"%"; document.getElementById("ovp").textContent=pct+"%";
+}
+
+function promptCard(p){
+  var txt = fill(p.text);
+  var d=document.createElement("div"); d.className="pc "+p.ai;
+  d.innerHTML='<header><span class="who">'+esc(TOOLS_META[p.ai])+' · '+esc(p.label)+'</span><button type="button">Copiar</button></header>'+
+    (p.why?'<div class="why">'+esc(p.why)+'</div>':'')+'<pre>'+esc(txt)+'</pre>';
+  var btn=d.querySelector("button"), pre=d.querySelector("pre");
+  btn.onclick=function(){ copyText(txt, pre, btn); };
+  return d;
+}
+function copyText(txt, pre, btn){
+  var old=btn.textContent;
+  function ok(){ btn.textContent="Copiado"; setTimeout(function(){btn.textContent=old;},1500); }
+  function fallback(){
+    try{ var r=document.createRange(); r.selectNodeContents(pre); var sel=getSelection(); sel.removeAllRanges(); sel.addRange(r); btn.textContent="Selecciónalo y copia (Ctrl/Cmd+C)"; setTimeout(function(){btn.textContent=old;},3000); }catch(e){}
+  }
+  try{ navigator.clipboard.writeText(txt).then(ok, fallback); }catch(e){ fallback(); }
+}
+
+function checksBlock(step){
+  var wrap=document.createElement("div");
+  step.checks.forEach(function(label,i){
+    var id=step.id+"_"+i, on=!!S.checks[id];
+    var r=document.createElement("label"); r.className="check"+(on?" on":"");
+    r.innerHTML='<input type="checkbox"'+(on?" checked":"")+'><span>'+esc(label)+'</span>';
+    r.querySelector("input").onchange=function(e){ S.checks[id]=e.target.checked; r.classList.toggle("on",e.target.checked); save(); };
+    wrap.appendChild(r);
+  });
+  return wrap;
+}
+
+function compareTool(){
+  var d=document.createElement("div");
+  var rows=[["gpt","ChatGPT"],["cl","Claude"],["gem","Gemini"],["ppx","Perplexity"]];
+  var h='<div class="tblw"><table><tr><th>IA</th><th>Nota 1–5</th><th>¿Por qué?</th></tr>';
+  rows.forEach(function(r){
+    var c=S.cmp[r[0]]||{};
+    h+='<tr><td style="color:var(--'+r[0]+');font-weight:600">'+r[1]+'</td><td><select data-k="'+r[0]+'" data-f="n"><option value="">–</option>'+[1,2,3,4,5].map(function(n){return '<option'+(String(c.n)===String(n)?" selected":"")+'>'+n+'</option>';}).join("")+'</select></td><td><input type="text" data-k="'+r[0]+'" data-f="w" value="'+esc(c.w||"")+'"></td></tr>';
+  });
+  d.innerHTML=h+'</table></div>';
+  d.querySelectorAll("select,input").forEach(function(el){
+    el.oninput=el.onchange=function(){ var k=el.dataset.k; S.cmp[k]=S.cmp[k]||{}; S.cmp[k][el.dataset.f]=el.value; save(); };
+  });
+  return d;
+}
+
+var CRIT=["Urgencia de la necesidad","Valor de cada cliente","Facilidad de llegar orgánicamente","Mi energía y ganas de servirlo","Pruebas que ya tengo (casos, credenciales)"];
+function matrixTool(){
+  var d=document.createElement("div");
+  function render(){
+    var h='<div class="tblw"><table><tr><th>Criterio</th><th>A · '+esc(CONFIG.audAshort)+'</th><th>B · '+esc(CONFIG.audBshort)+'</th></tr>';
+    CRIT.forEach(function(c,i){
+      ["A","B"].forEach(function(){});
+      h+='<tr><td>'+esc(c)+'</td>'+["A","B"].map(function(a){
+        var v=(S.matrix[a+i])||"";
+        return '<td><select data-k="'+a+i+'"><option value="">–</option>'+[1,2,3,4,5].map(function(n){return '<option'+(String(v)===String(n)?" selected":"")+'>'+n+'</option>';}).join("")+'</select></td>';
+      }).join("")+'</tr>';
+    });
+    h+='</table></div><div class="res" id="mres"></div>';
+    d.innerHTML=h;
+    d.querySelectorAll("select").forEach(function(el){ el.onchange=function(){ S.matrix[el.dataset.k]=el.value; save(); result(); }; });
+    result();
+  }
+  function result(){
+    var a=0,b=0,fa=0,fb=0;
+    CRIT.forEach(function(c,i){ var x=+S.matrix["A"+i]||0,y=+S.matrix["B"+i]||0; a+=x;b+=y; if(x)fa++; if(y)fb++; });
+    var r=d.querySelector("#mres"), msg;
+    if(fa<CRIT.length||fb<CRIT.length) msg="Completa los 5 criterios en ambos públicos. Total A: "+a+" · Total B: "+b;
+    else if(Math.abs(a-b)<=2) msg="Total A: "+a+" · B: "+b+". Está parejo: decide con la pregunta estratégica de abajo y empieza por uno. El otro será la fase 2.";
+    else msg="Total A: "+a+" · B: "+b+". La matriz apunta a <b>"+(a>b?"A · "+esc(CONFIG.audAshort):"B · "+esc(CONFIG.audBshort))+"</b>. Úsalo como primer público y deja el otro para la fase 2.";
+    r.innerHTML=msg;
+  }
+  render();
+  return d;
+}
+
+function valueTool(){
+  var d=document.createElement("div"); d.style.display="flex"; d.style.flexDirection="column"; d.style.gap="10px";
+  if(!S.value) S.value=CONFIG.offers.map(function(n){ return {n:n,a:5,b:5,c:5,e:5}; });
+  var FACT=[["a","Resultado soñado ↑"],["b","Probabilidad percibida ↑"],["c","Tiempo hasta resultado ↓"],["e","Esfuerzo del cliente ↓"]];
+  S.value.forEach(function(o,i){
+    var card=document.createElement("div"); card.className="offer";
+    var h='<input type="text" value="'+esc(o.n)+'" aria-label="Nombre de la oferta">';
+    FACT.forEach(function(f){ h+='<div class="sl"><span>'+f[1]+'</span><input type="range" min="1" max="10" value="'+o[f[0]]+'" data-f="'+f[0]+'"><b>'+o[f[0]]+'</b></div>'; });
+    h+='<div>Valor: <span class="score"></span></div>';
+    card.innerHTML=h;
+    function calc(){ card.querySelector(".score").textContent=((o.a*o.b)/(o.c*o.e)).toFixed(1); }
+    card.querySelector('input[type=text]').oninput=function(e){ o.n=e.target.value; save(); };
+    card.querySelectorAll("input[type=range]").forEach(function(r){ r.oninput=function(){ o[r.dataset.f]=+r.value; r.nextElementSibling.textContent=r.value; calc(); save(); }; });
+    calc(); d.appendChild(card);
+  });
+  var n=document.createElement("div"); n.className="src"; n.textContent="Puntaje más alto = oferta más fuerte hoy. Si la mejor no es la que más te interesa, ahí hay una conversación estratégica.";
+  d.appendChild(n);
+  return d;
+}
+
+function stepEl(c,s){
+  var el=document.createElement("section"); el.className="step"+(S.done[s.id]?" done":"");
+  var h=document.createElement("div"); h.className="sh";
+  h.innerHTML='<input type="checkbox" aria-label="Marcar paso como hecho"'+(S.done[s.id]?" checked":"")+'><div><h3>'+esc(s.t)+'</h3><div class="min">'+(s.min||"")+' min</div></div>';
+  h.querySelector("input").onchange=function(e){ S.done[s.id]=e.target.checked; el.classList.toggle("done",e.target.checked); save(); overall(); updateCprog(c); };
+  el.appendChild(h);
+  if(s.body){ var b=document.createElement("div"); b.className="body"; b.innerHTML=s.body; b.querySelectorAll("[data-aud]").forEach(function(x){ x.textContent = x.dataset.aud==="A"?CONFIG.audA:CONFIG.audB; }); el.appendChild(b); }
+  if(s.wow){ var w=document.createElement("div"); w.innerHTML='<div class="wowt">'+esc(s.wow.t)+'</div><div class="wow"><div class="w"><b>Sin estructura</b>'+s.wow.weak+'</div><div class="s"><b>Con estructura</b>'+s.wow.strong+'</div></div>'; el.appendChild(w); }
+  if(s.call && s.tool==="checks"){ /* shown after checklist */ }
+  (s.prompts||[]).forEach(function(p){ el.appendChild(promptCard(p)); });
+  if(s.tool==="compare") el.appendChild(compareTool());
+  if(s.tool==="matrix") el.appendChild(matrixTool());
+  if(s.tool==="value") el.appendChild(valueTool());
+  if(s.tool==="checks"){ el.appendChild(checksBlock(s)); if(s.call){ var cl=document.createElement("div"); cl.className="call"; cl.innerHTML="<b>Línea roja:</b> "+esc(s.call); el.appendChild(cl); } }
+  if(s.q){
+    var q=document.createElement("div"); q.className="q";
+    q.innerHTML='<div class="ql">Pregunta estratégica</div><p>'+esc(s.q.text)+'</p><textarea placeholder="Escribe tu respuesta aquí"></textarea>';
+    var ta=q.querySelector("textarea"); ta.value=S.ans[s.q.id]||""; ta.oninput=function(){ S.ans[s.q.id]=ta.value; save(); };
+    el.appendChild(q);
+  }
+  return el;
+}
+var cprogEls={};
+function updateCprog(c){ var p=classProgress(c), e=cprogEls[c.id]; if(e){ e.querySelector("i").style.width=p.pct+"%"; e.querySelector("span").textContent=p.d+" de "+p.total+" pasos"; } }
+
+
+var VBASE="https://eoceqdgeptdevudoniuk.supabase.co/storage/v1/object/public/neuroclick-julie/";
+var VIDS={"1": [["1.1", "Bienvenida al programa", 95, "1.1_bienvenida.mp4"], ["1.2", "Tus 4 asistentes", 158, "1.2_tus_4_ias.mp4"], ["1.3", "Entra a tus IAs", 132, "1.3_entra_a_tus_ias.mp4"], ["1.4", "Un mismo prompt, dos resultados", 216, "1.4_mismo_prompt_dos_resultados.mp4"], ["1.5", "Personaliza tus IAs", 245, "1.5_personalizar_tus_ias.mp4"], ["1.6", "Proyectos y Cuadernos", 369, "1.6_proyectos_y_cuadernos.mp4"], ["1.7", "Tarea: reto de 10 minutos", 119, "1.7_tarea_reto.mp4"]], "2": [["2.1", "Audita tu sitio web", 663, "2.1_auditar_tu_web.mp4"], ["2.2", "Audita tu página de Facebook", 244, "2.2_auditar_facebook.mp4"], ["2.3", "¿A quién le hablas primero?", 262, "2.3_a_quien_le_hablas.mp4"], ["2.4", "Fuentes e instrucciones de tu proyecto", 364, "2.4_fuentes_e_instrucciones.mp4"]], "3": [["3.1", "Branding", 201, "3.1_branding.mp4"], ["3.2", "Tu Brand Kit", 233, "3.2_brand_kit.mp4"], ["3.3a", "Imagen con un solo prompt", 259, "3.3a_imagen_con_un_prompt.mp4"], ["3.3b", "Conecta tu IA con Canva", 376, "3.3b_conecta_canva.mp4"], ["3.4a", "El hook", 296, "3.4a_hook.mp4"], ["3.4b", "El CTA y tu primera publicación completa", 258, "3.4b_cta_publicacion_completa.mp4"], ["3.5", "Tu campaña de 15 días", 325, "3.5_campana_15_dias.mp4"], ["3.6", "Programa y mide", 278, "3.6_programa_y_mide.mp4"], ["3.8", "Cierre y tarea de la semana", 77, "3.8_cierre.mp4"]], "4": [["4.1", "Posicionamiento: que te elijan a ti", 281, "4.1_posicionamiento.mp4"], ["4.2", "Escalar, ajustar o cambiar", 237, "4.2_escalar_ajustar_expandir.mp4"], ["4.3", "Cierre del nivel", 104, "4.3_cierre_del_nivel.mp4"], ["4.4", "Despedida", 84, "4.4_despedida.mp4"]]};
+function mmss(t){return Math.floor(t/60)+":"+String(t%60).padStart(2,"0");}
+function vidsEl(c){
+  var box=document.createElement("div"); box.className="vids";
+  box.innerHTML='<h3>Videolecciones de la Clase '+c.n+'</h3>';
+  (VIDS[c.n]||[]).forEach(function(v){
+    var w=document.createElement("div"); w.className="vl";
+    var h=document.createElement("div"); h.className="vh"; h.setAttribute("role","button"); h.tabIndex=0; h.setAttribute("aria-expanded","false");
+    h.innerHTML='<b>'+v[0]+'</b><span>'+esc(v[1])+'</span><em>'+mmss(v[2])+'</em>';
+    var slot=document.createElement("div");
+    function tg(){var on=h.getAttribute("aria-expanded")==="true"; if(on){slot.innerHTML="";h.setAttribute("aria-expanded","false");}else{slot.innerHTML='<video controls preload="metadata" playsinline src="'+VBASE+v[3]+'"></video>';h.setAttribute("aria-expanded","true");}}
+    h.onclick=tg; h.onkeydown=function(e){if(e.key==="Enter"||e.key===" "){e.preventDefault();tg();}};
+    w.appendChild(h); w.appendChild(slot); box.appendChild(w);
+  });
+  var a=document.createElement("a"); a.className="dl"; a.target="_blank"; a.rel="noopener"; a.href=VBASE+"material/Cuaderno_Clase"+c.n+".pdf"; a.textContent="Material descargable: Cuaderno de la Clase "+c.n+" (PDF)";
+  box.appendChild(a); return box;
+}
+function renderClass(c){
+  main.innerHTML="";
+  var g=document.createElement("div"); g.className="goal";
+  g.innerHTML='<div class="tag">Clase '+c.n+' · '+esc(c.short)+'</div><h2>'+esc(c.title)+'</h2><p>'+esc(c.goal)+'</p><div class="deliv">'+esc(c.deliv)+'</div><div class="cprog"><div class="bar"><i></i></div><span></span></div>';
+  main.appendChild(g); cprogEls[c.id]=g.querySelector(".cprog"); updateCprog(c); main.appendChild(vidsEl(c));
+  c.steps.forEach(function(s){ main.appendChild(stepEl(c,s)); });
+}
+
+var MET=[["Seguidores de la página","followers"],["Alcance (28 días)","reach"],["Visitas a la página (28 días)","visits"],["Interacciones en publicaciones","engage"],["Clics a mi sitio web","clicks"],["Mensajes o consultas recibidas","msgs"]];
+function renderBoard(){
+  main.innerHTML="";
+  var g=document.createElement("div"); g.className="goal";
+  g.innerHTML='<div class="tag">Tablero</div><h2>Tus resultados, en un solo lugar</h2><p>Anota tu línea base antes de publicar y vuelve el día 15 y el día 30. Con pocas semanas y poco volumen, mira la tendencia, no un número aislado.</p>';
+  main.appendChild(g);
+  var s=document.createElement("section"); s.className="step";
+  var h='<div class="tblw"><table><tr><th>Métrica</th><th>Día 0</th><th>Día 15</th><th>Día 30</th><th>Cambio</th></tr>';
+  MET.forEach(function(m){
+    var v=S.metrics[m[1]]||{};
+    h+='<tr><td>'+esc(m[0])+'</td>'+["d0","d15","d30"].map(function(k){ return '<td><input type="number" inputmode="numeric" data-m="'+m[1]+'" data-k="'+k+'" value="'+esc(v[k]===undefined?"":v[k])+'"></td>'; }).join("")+'<td data-delta="'+m[1]+'"></td></tr>';
+  });
+  s.innerHTML=h+'</table></div>';
+  function deltas(){
+    MET.forEach(function(m){
+      var v=S.metrics[m[1]]||{}, cell=s.querySelector('[data-delta="'+m[1]+'"]'), last=v.d30!==""&&v.d30!==undefined?v.d30:(v.d15!==""&&v.d15!==undefined?v.d15:null);
+      if(v.d0===undefined||v.d0===""||last===null){ cell.textContent="–"; return; }
+      var df=+last-+v.d0; cell.textContent=(df>0?"+":"")+df;
+      cell.style.color=df>0?"var(--ok)":df<0?"var(--bad)":"var(--muted)"; cell.style.fontWeight=600;
+    });
+  }
+  s.querySelectorAll("input").forEach(function(el){ el.oninput=function(){ var m=el.dataset.m; S.metrics[m]=S.metrics[m]||{}; S.metrics[m][el.dataset.k]=el.value; save(); deltas(); }; });
+  deltas();
+  var ex=document.createElement("div"); ex.innerHTML='<div class="row"><button type="button" class="btn">Copiar resumen</button><span class="src">Pégalo en Claude para la lectura de la Clase 4.</span></div><pre id="sumpre" style="white-space:pre-wrap;word-break:break-word;font-family:\'JetBrains Mono\',monospace;font-size:12.5px;background:var(--code);padding:12px;border-radius:8px;margin:10px 0 0" hidden></pre>';
+  s.appendChild(ex); main.appendChild(s);
+  var btn=ex.querySelector("button"), pre=ex.querySelector("pre");
+  btn.onclick=function(){ var t=summary(); pre.textContent=t; pre.hidden=false; copyText(t, pre, btn); };
+}
+function summary(){
+  var L=[]; L.push("PROGRAM SUMMARY · "+CONFIG.name+" · "+CONFIG.business);
+  L.push("Progress: "+document.getElementById("ovp").textContent);
+  L.push(""); L.push("METRICS (day 0 / day 15 / day 30)");
+  MET.forEach(function(m){ var v=S.metrics[m[1]]||{}; L.push("- "+m[0]+": "+(v.d0||"-")+" / "+(v.d15||"-")+" / "+(v.d30||"-")); });
+  var sa=0,sb=0,filled=0; CRIT.forEach(function(c,i){ sa+=+S.matrix["A"+i]||0; sb+=+S.matrix["B"+i]||0; if(S.matrix["A"+i]) filled++; });
+  if(filled){ L.push(""); L.push("AUDIENCE MATRIX: A ("+CONFIG.audAshort+") = "+sa+" · B ("+CONFIG.audBshort+") = "+sb); }
+  if(S.value){ L.push(""); L.push("VALUE EQUATION"); S.value.forEach(function(o){ L.push("- "+o.n+": dream "+o.a+", likelihood "+o.b+", time "+o.c+", effort "+o.e+" => "+((o.a*o.b)/(o.c*o.e)).toFixed(1)); }); }
+  var qs=[]; CLASSES.forEach(function(c){ c.steps.forEach(function(s){ if(s.q&&S.ans[s.q.id]) qs.push("- "+s.q.text+"\n  "+S.ans[s.q.id]); }); });
+  if(qs.length){ L.push(""); L.push("MY ANSWERS"); L=L.concat(qs); }
+  return L.join("\n");
+}
+
+function route(){
+  var id=(location.hash||"").replace("#","");
+  var v=VIEWS.filter(function(x){return x.id===id;})[0] || VIEWS[0];
+  tabsEl.querySelectorAll("button").forEach(function(b){ b.setAttribute("aria-selected", b.dataset.id===v.id?"true":"false"); });
+  if(v.id==="tablero") renderBoard(); else renderClass(CLASSES.filter(function(c){return c.id===v.id;})[0]);
+  overall();
+}
+window.addEventListener("hashchange", function(){ route(); window.scrollTo(0,0); });
+route();
+</script>
+</body></html>
