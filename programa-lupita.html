@@ -1,0 +1,555 @@
+<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Mi programa · NeuroClick</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,500;6..72,600&family=Instrument+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap">
+<style>
+/* DESIGN PLAN
+   Subject: 4-class async job-search program with AI.
+   Identity: steel-blue — steel-blue structure, saffron for the single highlight, cool neutrals.
+   Type: Newsreader (headings, editorial) + Instrument Sans (UI/body) + JetBrains Mono (prompts).
+   Each AI keeps a fixed color across the whole page (green/purple/blue/orange). */
+:root{
+  --bg:#f2f5f8; --surface:#ffffff; --surface2:#e9eef3; --ink:#12263a; --muted:#566879; --line:#d5dde5;
+  --accent:#0e5a8a; --accent-ink:#ffffff; --hi:#c77d00; --hi-bg:#fdf1d6;
+  --ok:#2a7a4b; --bad:#b3362b; --bad-bg:#fbe4e1; --good-bg:#e1f2e8;
+  --gpt:#2e7d32; --gpt-bg:#e3f1e4; --cl:#6b3fa0; --cl-bg:#ece3f6; --gem:#1a56b0; --gem-bg:#e0e9f8; --ppx:#b45309; --ppx-bg:#fbe9d6;
+  --code:#f6f8fa;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0c151e; --surface:#142130; --surface2:#1b2c3d; --ink:#e7eef5; --muted:#9bb0c3; --line:#2a3d50;
+  --accent:#5ab0e6; --accent-ink:#06121c; --hi:#f0b84a; --hi-bg:#3a2d10;
+  --ok:#62c286; --bad:#f08a80; --bad-bg:#3b1a17; --good-bg:#12301f;
+  --gpt:#6fcf75; --gpt-bg:#14301a; --cl:#b99be3; --cl-bg:#2a1d3d; --gem:#7fb0f5; --gem-bg:#14274a; --ppx:#f0a35e; --ppx-bg:#3a230f;
+  --code:#0f1b28; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0c151e; --surface:#142130; --surface2:#1b2c3d; --ink:#e7eef5; --muted:#9bb0c3; --line:#2a3d50;
+  --accent:#5ab0e6; --accent-ink:#06121c; --hi:#f0b84a; --hi-bg:#3a2d10;
+  --ok:#62c286; --bad:#f08a80; --bad-bg:#3b1a17; --good-bg:#12301f;
+  --gpt:#6fcf75; --gpt-bg:#14301a; --cl:#b99be3; --cl-bg:#2a1d3d; --gem:#7fb0f5; --gem-bg:#14274a; --ppx:#f0a35e; --ppx-bg:#3a230f;
+  --code:#0f1b28; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:'Instrument Sans',system-ui,sans-serif;font-size:16px;line-height:1.6;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 64px}
+.wrap{max-width:860px;margin:0 auto}
+h1,h2,h3{font-family:'Newsreader',Georgia,serif;font-weight:600;line-height:1.2;text-wrap:balance;margin:0}
+header.top{padding:28px 0 8px}
+.eyebrow{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:600}
+h1{font-size:clamp(28px,5vw,40px);margin-top:6px}
+.sub{color:var(--muted);margin:8px 0 0;max-width:62ch}
+.overall{display:flex;align-items:center;gap:12px;margin-top:16px;font-size:14px;color:var(--muted)}
+.bar{flex:1;height:8px;background:var(--surface2);border-radius:99px;overflow:hidden;min-width:0}
+.bar i{display:block;height:100%;background:var(--accent);width:0;transition:width .3s}
+nav.tabs{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);padding:10px 0;display:flex;gap:6px;overflow-x:auto;border-bottom:1px solid var(--line);margin-top:12px}
+nav.tabs button{flex:0 0 auto;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:10px;padding:8px 14px;font:inherit;font-size:14px;font-weight:500;cursor:pointer;text-align:left;line-height:1.25}
+nav.tabs button small{display:block;color:var(--muted);font-weight:400;font-size:11px}
+nav.tabs button[aria-selected="true"]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+nav.tabs button[aria-selected="true"] small{color:inherit;opacity:.85}
+main{padding-top:24px;display:flex;flex-direction:column;gap:24px}
+.goal{background:var(--surface);border:1px solid var(--line);border-left:5px solid var(--hi);border-radius:12px;padding:18px 20px}
+.goal h2{font-size:26px;margin:4px 0 8px}
+.goal .tag{font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--hi);font-weight:600}
+.goal p{margin:6px 0}
+.deliv{margin-top:10px;padding:10px 12px;background:var(--hi-bg);border-radius:8px;font-size:14px}
+.cprog{display:flex;align-items:center;gap:10px;margin-top:12px;font-size:13px;color:var(--muted)}
+.step{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:18px 20px;display:flex;flex-direction:column;gap:12px;min-width:0}
+.step.done{border-color:var(--ok)}
+.sh{display:flex;gap:12px;align-items:flex-start}
+.sh input[type=checkbox]{width:22px;height:22px;margin-top:3px;accent-color:var(--accent);flex:0 0 auto;cursor:pointer}
+.sh h3{font-size:20px}
+.min{font-size:12px;color:var(--muted);font-weight:500;margin-top:2px}
+.body p{margin:0 0 10px}.body p:last-child{margin:0}
+.body ul,.body ol{margin:6px 0 10px;padding-left:22px}.body li{margin:3px 0}
+.pc{border:1px solid var(--line);border-radius:10px;overflow:hidden;min-width:0}
+.pc header{display:flex;gap:10px;align-items:center;justify-content:space-between;padding:8px 12px;flex-wrap:wrap}
+.pc .who{font-weight:600;font-size:13px}
+.pc .why{font-size:13px;padding:8px 12px 0;color:var(--muted)}
+.pc pre{margin:0;padding:12px;white-space:pre-wrap;word-break:break-word;font-family:'JetBrains Mono',ui-monospace,monospace;font-size:12.5px;line-height:1.55;background:var(--code);color:var(--ink);margin-top:8px}
+.pc button{border:1px solid currentColor;background:transparent;color:inherit;border-radius:8px;padding:5px 12px;font:inherit;font-size:13px;font-weight:600;cursor:pointer}
+.pc.gpt header{background:var(--gpt-bg);color:var(--gpt)}.pc.gpt{border-color:var(--gpt)}
+.pc.cl header{background:var(--cl-bg);color:var(--cl)}.pc.cl{border-color:var(--cl)}
+.pc.gem header{background:var(--gem-bg);color:var(--gem)}.pc.gem{border-color:var(--gem)}
+.pc.ppx header{background:var(--ppx-bg);color:var(--ppx)}.pc.ppx{border-color:var(--ppx)}
+.wow{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.wow>div{border-radius:10px;padding:12px 14px;font-size:14px;min-width:0}
+.wow .w{background:var(--bad-bg);border:1px solid var(--bad)}.wow .s{background:var(--good-bg);border:1px solid var(--ok)}
+.wow b{display:block;font-size:11px;letter-spacing:.1em;text-transform:uppercase;margin-bottom:4px}
+.wow .w b{color:var(--bad)}.wow .s b{color:var(--ok)}
+.wowt{font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--hi);font-weight:600}
+.call{background:var(--bad-bg);border:1px solid var(--bad);border-radius:10px;padding:10px 14px;font-size:14px}
+.call b{color:var(--bad)}
+.ex{border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:10px;padding:12px 14px;background:var(--surface2);font-size:14px;margin:8px 0;line-height:1.6}.ex b{color:var(--accent)}
+.q{background:var(--hi-bg);border-radius:10px;padding:14px;border:1px solid var(--hi)}
+.q .ql{font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--hi);font-weight:600}
+.q p{margin:4px 0 8px;font-weight:500}
+textarea,input[type=text],input[type=number],select{width:100%;font:inherit;font-size:15px;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:8px 10px}
+textarea{min-height:76px;resize:vertical}
+.check{display:flex;gap:10px;align-items:flex-start;padding:6px 0;border-bottom:1px dashed var(--line)}
+.check:last-child{border:0}.check input{width:20px;height:20px;margin-top:2px;accent-color:var(--accent);flex:0 0 auto}
+.check span{font-size:15px}.check.on span{color:var(--muted);text-decoration:line-through}
+.tblw{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th,td{padding:8px 10px;border-bottom:1px solid var(--line);text-align:left;vertical-align:middle}
+th{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+td select,td input{min-width:70px}
+.res{margin-top:10px;padding:12px;border-radius:10px;background:var(--surface2);font-size:14px}
+.offer{border:1px solid var(--line);border-radius:10px;padding:12px;display:flex;flex-direction:column;gap:8px}
+.sl{display:grid;grid-template-columns:150px 1fr 28px;gap:10px;align-items:center;font-size:13px}
+.sl input{accent-color:var(--accent);width:100%}
+.score{font-family:'Newsreader',serif;font-size:26px;color:var(--accent)}
+.btn{border:0;background:var(--accent);color:var(--accent-ink);border-radius:10px;padding:10px 18px;font:inherit;font-weight:600;cursor:pointer}
+.btn.alt{background:transparent;color:var(--accent);border:1px solid var(--accent)}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.src{font-size:13px;color:var(--muted)}
+footer{margin-top:32px;font-size:12px;color:var(--muted);text-align:center}
+@media(max-width:560px){.wow{grid-template-columns:1fr}.sl{grid-template-columns:1fr 1fr 28px}.sl span:first-child{grid-column:1/-1}}
+
+.vids{margin-top:14px;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px 18px}
+.vids h3{font-family:var(--serif,inherit);font-size:18px;margin:0 0 10px}
+.vl{border:1px solid var(--line);border-radius:10px;margin-top:8px;overflow:hidden;background:var(--surface)}
+.vh{display:flex;gap:12px;align-items:center;padding:12px 14px;cursor:pointer;font-size:14px;background:var(--surface2)}
+.vh[aria-expanded="true"]{background:var(--accent);color:var(--accent-ink)}
+.vh b{min-width:34px}.vh span{flex:1}.vh em{font-style:normal;font-size:12px;opacity:.8}
+.vl video{display:block;width:100%;aspect-ratio:16/9;background:#000}
+.dl{display:inline-block;margin-top:14px;background:var(--hi);color:#fff;border-radius:8px;padding:10px 16px;font-weight:600;font-size:14px;text-decoration:none}
+body{margin:0}.topbar{max-width:980px;margin:0 auto;padding:12px 16px 0;font:500 13px "Instrument Sans",system-ui,sans-serif}.topbar a{color:var(--accent);text-decoration:none}
+</style></head><body>
+<script>try{if(!localStorage.getItem("access_token")){location.replace("/auth.html")}}catch(e){}</script>
+<div class="topbar"><a href="/dashboard.html">← Volver a mi panel</a></div>
+
+<div class="wrap">
+<header class="top">
+  <div class="eyebrow" id="eyebrow"></div>
+  <h1 id="h1"></h1>
+  <p class="sub" id="sub"></p>
+  <div class="overall"><span id="ovl">Avance total</span><div class="bar"><i id="ovb"></i></div><span id="ovp">0%</span></div>
+</header>
+<nav class="tabs" id="tabs" role="tablist"></nav>
+<main id="main"></main>
+<footer>Tu avance y tus respuestas se guardan solo en este navegador. Usa «Copiar resumen» en el tablero para llevártelos.</footer>
+</div>
+
+<script>
+/* ============ CONFIG: datos de la alumna ============ */
+var CONFIG = {
+  name: "Lupita Angulo",
+  first: "Lupita",
+  business: "Tu nueva ruta profesional",
+  location: "California",
+  site: "", fb: "",
+  bio: "Licenciada en Administración Industrial (IPN) con MBA de doble grado México–EE. UU. y 11 años en Walmart, de Senior Demand Planner a Financial Planner",
+  audA: "", audB: "", audAshort: "", audBshort: "",
+  offers: [],
+  platformNext: "Indeed y CalJOBS"
+};
+
+var P_INSTR = `Role: You are my senior career strategist and an experienced U.S. recruiter.
+
+Context: I'm Lupita Angulo and I live in California. I hold a degree in Industrial Administration from Instituto Politécnico Nacional (Mexico), specialized in productivity and quality, and a dual-degree MBA (Mexico–U.S.). I worked 11 years at Walmart in Mexico, growing from Senior Demand Planner to Financial Planner, including about 4 years working remotely. I'm bilingual (Spanish/English) and I have an English teaching certificate. I want a stable job at a global company, preferably remote or hybrid, with a good quality of life.
+
+Task: Help me get clear on my professional target, then build my CV and LinkedIn profile and plan my job search over the next 4 weeks. Ask me questions before advising, one at a time. Challenge weak ideas and keep me focused on my goal.
+
+What NOT to do: don't flatter me or just agree with me. Never invent achievements, numbers, companies or job openings; if you are guessing, say so. No generic advice.
+
+Language: answer me in Spanish. Write CV and LinkedIn texts in American English.`;
+
+var P_ADAPT = `Role: U.S. recruiter screening for this specific job.
+
+Context: My master resume is in this project. Below is the job posting.
+
+Task: (1) Rate my fit from 1 to 10 and explain why. (2) List the keywords from the posting that are missing in my resume. (3) Tell me which bullets to move up or rewrite. (4) Give me the adapted resume.
+
+What NOT to do: don't add skills or experience I don't have; only reorder and reword what's true. Answer in Spanish, resume in American English.
+
+[PASTE THE JOB POSTING HERE]`;
+
+var CLASSES = [
+/* ===================== CLASE 1 ===================== */
+{ id:"clase-1", n:1, title:"Tu estratega de carrera con IA", short:"Base",
+  goal:"Que la IA te conozca y trabaje para ti: tu proyecto en Claude configurado, tus fuentes de inspiración, un diagnóstico honesto de tu CV y claridad sobre tu próximo trabajo.",
+  deliv:"Entregable: proyecto en Claude con instrucciones, 1 o 2 fuentes, diagnóstico de tu CV y tus 3 respuestas de claridad.",
+  steps:[
+  { id:"c1s1", t:"Tu equipo de IAs: cada una tiene un rol", min:5,
+    body:`<ul><li><b style="color:var(--cl)">Claude = estratega.</b> Piensa, pregunta y decide contigo.</li>
+    <li><b style="color:var(--gpt)">ChatGPT = ejecutora.</b> Produce textos, versiones del CV e imágenes.</li>
+    <li><b style="color:var(--gem)">Gemini = suplente creativa.</b> Tu respaldo cuando se acaban los mensajes.</li></ul>
+    <p>Las versiones gratis tienen límite de uso. Si Claude te pide volver en unas horas, no es un error: retoma después o sigue en Gemini.</p>` },
+  { id:"c1s2", t:"Qué compartir con la IA y qué no", min:5,
+    body:`<div class="tblw"><table><tr><th>Sí compartes</th><th>Nunca compartes</th></tr>
+    <tr><td>Tu experiencia, tus estudios, tus logros, tus intereses y tus dudas</td><td>Número de ID o de seguro social, dirección, datos bancarios, contraseñas, documentos oficiales</td></tr></table></div>
+    <p>Tú decides qué es verdad: si la IA dice algo de ti que no es cierto, corrígelo.</p>` },
+  { id:"c1s3", t:"Crea tu proyecto en Claude", min:10,
+    body:`<ol><li>Entra a claude.ai › <b>Proyectos</b> › <b>Nuevo proyecto</b>.</li><li>Ponle un nombre y escribe para qué es. Ej.: «Mi estrategia profesional en Estados Unidos».</li><li>A la derecha verás <b>Instrucciones</b> (cómo trabaja contigo) y <b>Contexto</b> (tu CV y tus fuentes).</li></ol>` },
+  { id:"c1s4", t:"Tus instrucciones: Rol, Contexto, Tarea y Qué NO hacer", min:15,
+    wow:{t:"La diferencia", weak:"«Ayúdame a conseguir trabajo.»<br><br>Consejos que sirven para cualquiera.", strong:"Rol + contexto + tarea + límites.<br><br>Una respuesta que habla de ti."},
+    prompts:[{ai:"cl",label:"Instrucciones de tu proyecto",why:"Revisa que todo sea cierto y pégalo en Instrucciones.",text:P_INSTR}] },
+  { id:"c1s5", t:"Dale fuentes que te inspiren", min:15,
+    body:`<ol><li>Busca en YouTube una conferencia de alguien que te inspire.</li><li>Instala una extensión de transcripción desde la Chrome Web Store.</li><li>Copia la transcripción y pégala en tu proyecto: <b>Contexto › Agregar contenido de texto</b>.</li></ol>
+    <div class="call"><b>Importante:</b> no subas libros en PDF descargados de internet: tienen derechos de autor. Tus propias notas valen más. Dos o tres fuentes bastan.</div>`,
+    prompts:[{ai:"cl",label:"Resume una fuente",why:"Convierte la inspiración en acciones de esta semana.",text:`Role: career coach who turns inspiration into practical action.
+
+Context: I added to this project a transcript of a talk by [NAME].
+
+Task: Summarize in 8 bullets the ideas about purpose, decision-making and resilience that I can apply to my job search right now. For each one, give me one concrete action for this week.
+
+What NOT to do: don't add ideas that are not in the transcript; separate the speaker's ideas from your interpretation. Answer in Spanish.`}] },
+  { id:"c1s6", t:"Háblale: tu primera conversación de claridad", min:20,
+    body:`<p>Abre un chat nuevo dentro de tu proyecto y usa el <b>micrófono</b>. La primera vez, dale «Permitir». La <b>✓</b> pasa el texto al chat; la <b>✕</b> borra todo lo que dictaste.</p><p>Termina siempre con: <b>«Hazme preguntas, una por una, para tener claridad»</b>.</p>`,
+    prompts:[{ai:"cl",label:"Conversación de claridad",why:"Si prefieres empezar con una guía.",text:`Role: senior career strategist, honest and direct.
+
+Context: Use everything in this project. I'm not clear yet about my next step. I like my career in planning and finance at global companies, I'm also drawn to spiritual work, and I've wondered if I should study something completely new (like healthcare). I'd like to start earning soon and then move toward my ideal role, with a better work-life balance than I had before.
+
+Task: Interview me with up to 10 questions, one at a time, to help me decide my professional target. After my last answer, give me: (1) 2 or 3 possible routes, (2) pros and cons of each, (3) which one gets me working soonest without moving me away from my strengths, and (4) my first 3 steps.
+
+What NOT to do: don't decide for me before asking, don't flatter me, don't invent anything about me. Answer in Spanish.`}] },
+  { id:"c1s7", t:"Tu CV: primero el diagnóstico", min:15,
+    body:`<p>En el chat toca <b>+ › Añadir archivos</b> y sube tus CV. Todavía no pidas uno nuevo: primero, un diagnóstico honesto. Si no recuerdas una cifra, no la inventes.</p>`,
+    prompts:[{ai:"cl",label:"Diagnóstico de tu CV",why:"Adjunta tus CV antes de enviar.",text:`Role: experienced U.S. recruiter for planning, operations and finance roles.
+
+Context: I'm attaching my 2 CVs: an older, more complete one and a shorter one. Both were written for the Mexican market.
+
+Task: Don't rewrite them yet. First tell me honestly: (1) what a U.S. recruiter understands about me in 10 seconds, (2) my 3 strongest assets, (3) the 5 biggest problems, ranked. Then ask me questions, one at a time, to fill in what's missing (job titles, dates, results).
+
+What NOT to do: don't invent numbers or achievements. If I don't remember a figure, help me describe the result honestly without one. Answer in Spanish.`}] },
+  { id:"c1s8", t:"Tu tarea: claridad sobre tu próximo trabajo", min:20,
+    body:`<p>Sigue conversando con tu estratega: lo que quisiste hacer y no pudiste, lo que te gusta, lo que ya no quieres. Si se agotan los mensajes, pide un resumen y sigue en Gemini.</p>`,
+    tool:"checks", checks:["Sé qué tipo de trabajo voy a buscar","Sé si lo quiero remoto, híbrido o presencial","Anoté lo que más claridad me dio"],
+    q:{id:"q1", text:"¿Cómo te ves trabajando dentro de 3 años?"} }
+  ] },
+
+/* ===================== CLASE 2 ===================== */
+{ id:"clase-2", n:2, title:"Tu LinkedIn, paso a paso", short:"Tu perfil",
+  goal:"Dejar tu perfil de LinkedIn armado en privado, con foto, portada, titular, «Acerca de», experiencia y logros sin inventar, listo para revisarlo juntas.",
+  deliv:"Entregable: una sola cuenta de LinkedIn, foto y portada, perfil en inglés en borrador, 5 logros, tu frase de valor y tus alertas en Indeed y CalJOBS.",
+  steps:[
+  { id:"c2s1", t:"Dos caminos en paralelo y un solo foco", min:10,
+    body:`<p><b>Trabajo puente:</b> las entrevistas que ya conseguiste. <b>Perfil profesional:</b> tus 20 años de experiencia, 11 en Walmart, tu maestría y tu inglés. LinkedIn es la herramienta del segundo camino.</p>
+    <p>LinkedIn permite <b>una sola cuenta por persona</b>. Elige una función, no una industria. Lo que se adapta a cada oferta es tu CV, no tu perfil.</p>
+    <div class="tblw"><table><tr><th>Opción</th><th>Título en inglés</th></tr><tr><td>1</td><td>Demand / Inventory Planner</td></tr><tr><td>2</td><td>Operations &amp; Planning Analyst</td></tr><tr><td>3</td><td>Bilingual Operations Coordinator</td></tr></table></div>`,
+    q:{id:"q2", text:"¿Qué título eliges como foco principal y por qué?"} },
+  { id:"c2s2", t:"Tu cuenta y tu privacidad", min:15,
+    body:`<ol><li>Una sola cuenta: intenta recuperar la de Outlook antes de crear otra. Usa Chrome con tu perfil personal.</li><li>Protege tu cuenta desde la app de LinkedIn en tu teléfono (verificación en dos pasos: Configuración › Inicio de sesión y seguridad).</li><li>Mientras armas el perfil, desactiva «compartir cambios con tu red».</li><li>«Tengo interés en…» › Buscar empleo › visible <b>solo para reclutadores</b>.</li></ol>
+    <div class="call"><b>Nunca va en LinkedIn:</b> tu dirección, número de ID, fecha de nacimiento, documentos ni fotos personales.</div>` },
+  { id:"c2s3", t:"Tu foto profesional y tu portada", min:30,
+    body:`<p>Tómate varias fotos de día, frente a una ventana, con ropa lisa. Pregúntate: <b>¿me reconocerían en una videollamada?</b></p><p>Portada: <b>1584 × 396 px</b>, lado izquierdo libre y una sola frase. Puedes hacerla en Canva o crear el fondo en ChatGPT o Gemini.</p>`,
+    prompts:[
+    {ai:"gpt",label:"Retrato profesional",why:"Adjunta tu foto. Mejora fondo, luz y encuadre sin cambiarte a ti.",text:`Usa la foto que te adjunto como base y crea un retrato profesional para mi perfil de LinkedIn.
+
+Identidad: conserva exactamente mi rostro, mis rasgos, mi edad, mi tono de piel, mi contextura, mi peinado y el color de mi cabello. No modifiques ojos, nariz, boca ni expresión. Sin retoques de belleza ni piel suavizada.
+
+Encuadre: cabeza y hombros, mirada a la cámara, rostro centrado ocupando cerca del 60 % de la imagen, formato cuadrado 1:1.
+
+Vestuario: mantén mi ropa. Si no se ve formal, cámbiala por un saco azul marino liso con blusa blanca.
+
+Fondo: gris claro liso, con un degradado suave, sin objetos.
+
+Luz: suave y frontal, como de estudio, con sombras naturales y tonos de piel reales.
+
+Estilo: fotografía corporativa realista y nítida. No ilustración, no estilo artístico.`},
+    {ai:"gpt",label:"Si te cambió la cara",why:"Úsalo solo si no te reconoces.",text:`La persona ya no se parece a mí. Vuelve a mi foto original y cambia solo el fondo y la luz. No modifiques nada de mi rostro ni de mi cuerpo.`},
+    {ai:"gpt",label:"Fondo para tu portada",why:"Luego agregas tu frase en Canva.",text:`Crea una imagen de fondo para un banner de LinkedIn, formato panorámico muy horizontal. Estilo corporativo sobrio, tonos azul marino y gris, con líneas suaves y sutiles que sugieran datos y planificación. Sin texto, sin personas, sin logotipos. Deja el lado derecho más limpio para agregar texto después.`}] },
+  { id:"c2s4", t:"Claude escribe tu perfil", min:30,
+    body:`<p>Abre tu proyecto en Claude y pega el prompt. Revisa cada texto y pégalo en LinkedIn, sección por sección. Anota tus dudas.</p>`,
+    prompts:[{ai:"cl",label:"Tu perfil de LinkedIn",why:"Todo en inglés. Corrige lo que no sea cierto.",text:`Con mi inventario de logros y mi rol meta, escribe mi perfil de LinkedIn en inglés americano:
+1) 3 opciones de titular (máximo 220 caracteres) con las palabras clave que usan los reclutadores para mi rol meta.
+2) Sección "About" de 150 a 250 palabras, en primera persona, con 3 logros con números, mencionando que soy bilingüe y cerrando con el rol que busco.
+3) Para cada puesto en Walmart: una línea de alcance y de 3 a 5 viñetas con resultados medibles.
+4) Las 15 habilidades más relevantes para mi rol meta, en orden de prioridad, solo las que tengo.
+No inventes nada. Si falta un dato, pregúntame antes de escribir.`}] },
+  { id:"c2s5", t:"Logros sin inventar y tu frase de valor", min:25,
+    body:`<div class="tblw"><table><tr><th>Forma honesta</th><th>Ejemplo</th></tr><tr><td>Rangos</td><td>«alrededor de», «más de»</td></tr><tr><td>Alcance</td><td>años, categorías, tiendas, personas a cargo</td></tr><tr><td>Frecuencia</td><td>«pronósticos semanales para todo el país»</td></tr><tr><td>Confianza</td><td>ascensos y reconocimientos</td></tr></table></div>
+    <div class="ex"><b>Frase de valor:</b> «Ayudo a empresas a lograr ___, gracias a ___».<br>Ej.: «Ayudo a empresas de retail a tener el producto correcto, en el lugar correcto y al costo correcto, gracias a 11 años de experiencia en planeación en Walmart».</div>`,
+    prompts:[{ai:"cl",label:"Logros sin inventar",why:"Te entrevista y convierte tus respuestas en viñetas.",text:`No recuerdo las cifras exactas de mis logros y no quiero inventar nada. Hazme preguntas, una por vez, para reconstruir mis resultados en Walmart usando rangos aproximados, números de alcance (años, categorías, tiendas, personas), frecuencia de mis tareas y mis ascensos o reconocimientos. Después, conviértelos en viñetas en inglés que pueda defender en una entrevista.`}],
+    q:{id:"q3", text:"Escribe tu frase de valor."} },
+  { id:"c2s6", t:"Conecta, Indeed y CalJOBS", min:30,
+    body:`<p>Envía de <b>10 a 15 invitaciones por día</b> a personas afines. Antes de enviar tu CV, preséntate con un mensaje.</p>
+    <ul><li><b>Indeed:</b> sube tu CV en inglés, busca con el título exacto y tu ciudad en California, filtra por remoto y fecha, y guarda la búsqueda como alerta.</li><li><b>CalJOBS</b> (caljobs.ca.gov): portal oficial y gratuito de California. Guarda varias versiones de tu CV y activa el Virtual Recruiter.</li></ul>
+    <div class="call"><b>Un empleo real nunca</b> te pide dinero, te contacta solo por WhatsApp o mensaje de texto, ni te contrata sin entrevista por video o en persona.</div>`,
+    tool:"checks", checks:["Tengo una sola cuenta de LinkedIn","Foto y portada subidas","Titular y «Acerca de» en borrador","Al menos 5 logros escritos","Alerta guardada en Indeed","Virtual Recruiter activo en CalJOBS"] }
+  ] },
+
+/* ===================== CLASE 3 ===================== */
+{ id:"clase-3", n:3, title:"Tu búsqueda y tus entrevistas", short:"Conversaciones",
+  goal:"Convertir tu perfil en conversaciones con empresas: CV maestro en inglés, un método para adaptarlo a cada oferta, contacto directo y práctica de entrevistas.",
+  deliv:"Entregable: CV maestro en PDF, lista de 20 empresas con contactos, postulaciones adaptadas, mensajes enviados, 5 historias STAR y simulacros de entrevista.",
+  steps:[
+  { id:"c3s1", t:"Tu CV maestro en inglés", min:30,
+    body:`<p>En Estados Unidos, primero lo lee un sistema automático que busca palabras clave. Si tu CV tiene columnas, tablas o diseño de Canva, te descarta.</p>
+    <div class="tblw"><table><tr><th>Sí</th><th>No</th></tr><tr><td>Inglés, una sola columna, texto simple, una página (máximo dos), PDF</td><td>Foto, edad, estado civil</td></tr></table></div>
+    <p>Cargos y fechas iguales a tu LinkedIn. Cada logro, algo que puedas explicar en una entrevista.</p>`,
+    prompts:[{ai:"cl",label:"Tu CV maestro",why:"Pásalo a un documento de una columna y guárdalo como PDF.",text:`Role: senior U.S. recruiter and resume writer for planning, operations and finance roles.
+
+Context: Use everything in this project: my CV diagnosis, my achievements inventory and my target role.
+
+Task: Write my master resume in American English, ATS-friendly: one column, no tables or graphics, max 2 pages. Sections: header (name, city and state, email, LinkedIn), Professional Summary (3 lines), Core Skills (10 keywords), Professional Experience (Walmart as one company with each role, 3-5 bullets each: action verb + what I did + result), Education, Certifications and Languages.
+
+What NOT to do: no photo, age, marital status or ID numbers. Don't invent numbers or achievements; if a bullet needs a figure I didn't give you, mark it [CONFIRM]. Explain your choices in Spanish.`}] },
+  { id:"c3s2", t:"Adapta tu CV a cada oferta", min:20,
+    body:`<p>Copia la descripción de la oferta y pégala en Claude con el prompt. Si la coincidencia es menor de 6, piénsalo antes de postular: mejor pocas postulaciones bien adaptadas. Claude solo reordena y reescribe lo que es cierto.</p>`,
+    prompts:[{ai:"cl",label:"Adapta tu CV a una oferta",why:"Pega la oferta al final.",text:P_ADAPT}] },
+  { id:"c3s3", t:"Contacto directo y mensajes", min:30,
+    body:`<p>Arma tu lista de 20 empresas. En cada una busca a alguien del área y a alguien de reclutamiento. Busca también excompañeros de Walmart y egresados: una recomendación interna abre puertas.</p>
+    <p>Un buen mensaje es corto, habla de la otra persona y pide una conversación. Nunca pidas trabajo en el primer mensaje. Si no responden en una semana, un solo recordatorio amable.</p>`,
+    prompts:[
+    {ai:"cl",label:"Mensaje 1 · Persona del área",why:"Cambia nombre, empresa y un detalle real.",text:`Hi [Name], I spent 11 years in demand and financial planning at Walmart and I'm now based in California. I noticed you lead [team] at [Company]. Would you be open to a 15-minute chat about how your team approaches planning? I'd value your perspective.`},
+    {ai:"cl",label:"Mensaje 2 · Reclutador",why:"Adáptalo a la empresa.",text:`Hi [Name], I'm a bilingual Demand & Financial Planner with 11 years at Walmart and an MBA. I'm interested in [role or area] at [Company]. Could I send you my resume or ask which openings would fit my background?`},
+    {ai:"cl",label:"Mensaje 3 · Excompañero o egresado",why:"Para pedir una referencia.",text:`Hi [Name], it's been a while since [shared place]. I'm now in California looking for planning roles, and I saw you're at [Company]. Would you be open to telling me how the team works and whether a referral could make sense?`}] },
+  { id:"c3s4", t:"Las etapas de la entrevista y tus historias STAR", min:30,
+    body:`<p><b>Etapas:</b> filtro (a veces automático) › recursos humanos › área › decisión y oferta.</p>
+    <p><b>S</b>ituación · <b>T</b>area · <b>A</b>cción (qué hiciste tú) · <b>R</b>esultado (con un número si lo tienes). Prepara 5 historias y practícalas en <b>modo voz</b>, en inglés.</p>`,
+    prompts:[{ai:"cl",label:"Historias STAR",why:"Te entrevista y arma cada historia.",text:`Role: interview coach for U.S. corporate roles in planning and finance.
+
+Context: Use my experience in this project.
+
+Task: Help me build 5 STAR stories (Situation, Task, Action, Result) for these themes: a problem I solved, a process I improved, a time I worked with a difficult stakeholder, a mistake I learned from, and a time I led or trained others. Ask me questions one at a time for each story. Then write each story in English (about 1 minute spoken) and give me a short Spanish version.
+
+What NOT to do: don't invent details or results; if I don't remember a number, describe the result honestly without one. Answer in Spanish.`},
+    {ai:"cl",label:"Simulacro de entrevista",why:"Un simulacro por día. Antes de una entrevista real, pega la oferta.",text:`Role: hiring manager at a U.S. company interviewing me for [ROLE]. Be realistic, not easy.
+
+Context: My resume and STAR stories are in this project. [PASTE THE JOB POSTING IF YOU HAVE ONE.]
+
+Task: Interview me in English, one question at a time, 8 questions mixing behavioral and role-specific ones. After each answer, give me short feedback in Spanish: what worked, what to improve, and a stronger version of my answer. At the end, give me my 3 biggest improvements.
+
+What NOT to do: don't ask all questions at once; don't just praise me.`}] },
+  { id:"c3s5", t:"Dos preguntas difíciles y tu tarea", min:15,
+    body:`<ul><li><b>«¿Cuál es tu expectativa salarial?»</b> Investiga el rango del puesto en tu zona (Indeed, Glassdoor), responde con un rango y di que eres flexible según el paquete completo.</li><li><b>«Tu experiencia es en México: ¿por qué contratarte?»</b> 11 años en una empresa global de EE. UU., sus sistemas y estándares, trabajo en remoto y bilingüe.</li><li><b>¿Autorización para trabajar?</b> Responde con la verdad y solo lo que te preguntan.</li></ul>`,
+    tool:"checks", checks:["CV maestro en inglés (PDF)","Lista de 20 empresas","Postulaciones adaptadas","Mensajes directos enviados","5 historias STAR","Un simulacro por día"],
+    q:{id:"q4", text:"Escribe tu respuesta a «¿por qué contratarte?» en inglés."} }
+  ] },
+
+/* ===================== CLASE 4 ===================== */
+{ id:"clase-4", n:4, title:"Tu plan ejecutable", short:"Próximamente",
+  goal:"Un plan paso a paso para las próximas semanas, con tareas que puedes ir marcando. Esta clase estará disponible pronto.",
+  deliv:"Próximamente.",
+  steps:[] }
+];
+/* ============================================================ */
+var TOOLS_META = {gpt:"ChatGPT · Ejecutor", cl:"Claude · Estratega", gem:"Gemini · Creativo", ppx:"Perplexity · Investigación"};
+var KEY = "lupita-programa-v1";
+var S = {done:{}, checks:{}, ans:{}, matrix:{}, value:null, metrics:{}, cmp:{}};
+try{ var raw = localStorage.getItem(KEY); if(raw){ var p = JSON.parse(raw); for(var k in p){ S[k]=p[k]; } } }catch(e){}
+function save(){ try{ localStorage.setItem(KEY, JSON.stringify(S)); }catch(e){} }
+function esc(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
+function fill(t){ return t.replace(/\{\{(\w+)\}\}/g,function(m,k){ var v=CONFIG[k]; if(k==="offers") v=CONFIG.offers.join(", "); return v!==undefined?v:m; }); }
+
+document.getElementById("eyebrow").textContent = "Programa de 4 clases · " + CONFIG.business;
+document.getElementById("h1").textContent = "Tu nueva ruta profesional, con IA";
+document.getElementById("sub").textContent = CONFIG.first + ", cada clase termina con algo concreto que puedes usar mañana. Pausa los videos y avanza a tu ritmo.";
+
+var tabsEl = document.getElementById("tabs"), main = document.getElementById("main");
+var VIEWS = CLASSES.map(function(c){ return {id:c.id, label:"Clase "+c.n, small:c.short}; }).concat([{id:"tablero", label:"Tablero", small:"Resultados"}]);
+VIEWS.forEach(function(v){
+  var b=document.createElement("button"); b.setAttribute("role","tab"); b.dataset.id=v.id;
+  b.innerHTML = esc(v.label)+"<small>"+esc(v.small)+"</small>";
+  b.onclick=function(){ location.hash = v.id; };
+  tabsEl.appendChild(b);
+});
+
+function classProgress(c){
+  var total=0, d=0;
+  c.steps.forEach(function(s){ total++; if(S.done[s.id]) d++; });
+  return {d:d,total:total,pct: total?Math.round(100*d/total):0};
+}
+function overall(){
+  var t=0,d=0; CLASSES.forEach(function(c){ var p=classProgress(c); t+=p.total; d+=p.d; });
+  var pct=t?Math.round(100*d/t):0;
+  document.getElementById("ovb").style.width=pct+"%"; document.getElementById("ovp").textContent=pct+"%";
+}
+
+function promptCard(p){
+  var txt = fill(p.text);
+  var d=document.createElement("div"); d.className="pc "+p.ai;
+  d.innerHTML='<header><span class="who">'+esc(TOOLS_META[p.ai])+' · '+esc(p.label)+'</span><button type="button">Copiar</button></header>'+
+    (p.why?'<div class="why">'+esc(p.why)+'</div>':'')+'<pre>'+esc(txt)+'</pre>';
+  var btn=d.querySelector("button"), pre=d.querySelector("pre");
+  btn.onclick=function(){ copyText(txt, pre, btn); };
+  return d;
+}
+function copyText(txt, pre, btn){
+  var old=btn.textContent;
+  function ok(){ btn.textContent="Copiado"; setTimeout(function(){btn.textContent=old;},1500); }
+  function fallback(){
+    try{ var r=document.createRange(); r.selectNodeContents(pre); var sel=getSelection(); sel.removeAllRanges(); sel.addRange(r); btn.textContent="Selecciónalo y copia (Ctrl/Cmd+C)"; setTimeout(function(){btn.textContent=old;},3000); }catch(e){}
+  }
+  try{ navigator.clipboard.writeText(txt).then(ok, fallback); }catch(e){ fallback(); }
+}
+
+function checksBlock(step){
+  var wrap=document.createElement("div");
+  step.checks.forEach(function(label,i){
+    var id=step.id+"_"+i, on=!!S.checks[id];
+    var r=document.createElement("label"); r.className="check"+(on?" on":"");
+    r.innerHTML='<input type="checkbox"'+(on?" checked":"")+'><span>'+esc(label)+'</span>';
+    r.querySelector("input").onchange=function(e){ S.checks[id]=e.target.checked; r.classList.toggle("on",e.target.checked); save(); };
+    wrap.appendChild(r);
+  });
+  return wrap;
+}
+
+function compareTool(){
+  var d=document.createElement("div");
+  var rows=[["gpt","ChatGPT"],["cl","Claude"],["gem","Gemini"],["ppx","Perplexity"]];
+  var h='<div class="tblw"><table><tr><th>IA</th><th>Nota 1–5</th><th>¿Por qué?</th></tr>';
+  rows.forEach(function(r){
+    var c=S.cmp[r[0]]||{};
+    h+='<tr><td style="color:var(--'+r[0]+');font-weight:600">'+r[1]+'</td><td><select data-k="'+r[0]+'" data-f="n"><option value="">–</option>'+[1,2,3,4,5].map(function(n){return '<option'+(String(c.n)===String(n)?" selected":"")+'>'+n+'</option>';}).join("")+'</select></td><td><input type="text" data-k="'+r[0]+'" data-f="w" value="'+esc(c.w||"")+'"></td></tr>';
+  });
+  d.innerHTML=h+'</table></div>';
+  d.querySelectorAll("select,input").forEach(function(el){
+    el.oninput=el.onchange=function(){ var k=el.dataset.k; S.cmp[k]=S.cmp[k]||{}; S.cmp[k][el.dataset.f]=el.value; save(); };
+  });
+  return d;
+}
+
+var CRIT=["Urgencia de la necesidad","Valor de cada cliente","Facilidad de llegar orgánicamente","Mi energía y ganas de servirlo","Pruebas que ya tengo (casos, credenciales)"];
+function matrixTool(){
+  var d=document.createElement("div");
+  function render(){
+    var h='<div class="tblw"><table><tr><th>Criterio</th><th>A · '+esc(CONFIG.audAshort)+'</th><th>B · '+esc(CONFIG.audBshort)+'</th></tr>';
+    CRIT.forEach(function(c,i){
+      ["A","B"].forEach(function(){});
+      h+='<tr><td>'+esc(c)+'</td>'+["A","B"].map(function(a){
+        var v=(S.matrix[a+i])||"";
+        return '<td><select data-k="'+a+i+'"><option value="">–</option>'+[1,2,3,4,5].map(function(n){return '<option'+(String(v)===String(n)?" selected":"")+'>'+n+'</option>';}).join("")+'</select></td>';
+      }).join("")+'</tr>';
+    });
+    h+='</table></div><div class="res" id="mres"></div>';
+    d.innerHTML=h;
+    d.querySelectorAll("select").forEach(function(el){ el.onchange=function(){ S.matrix[el.dataset.k]=el.value; save(); result(); }; });
+    result();
+  }
+  function result(){
+    var a=0,b=0,fa=0,fb=0;
+    CRIT.forEach(function(c,i){ var x=+S.matrix["A"+i]||0,y=+S.matrix["B"+i]||0; a+=x;b+=y; if(x)fa++; if(y)fb++; });
+    var r=d.querySelector("#mres"), msg;
+    if(fa<CRIT.length||fb<CRIT.length) msg="Completa los 5 criterios en ambos públicos. Total A: "+a+" · Total B: "+b;
+    else if(Math.abs(a-b)<=2) msg="Total A: "+a+" · B: "+b+". Está parejo: decide con la pregunta estratégica de abajo y empieza por uno. El otro será la fase 2.";
+    else msg="Total A: "+a+" · B: "+b+". La matriz apunta a <b>"+(a>b?"A · "+esc(CONFIG.audAshort):"B · "+esc(CONFIG.audBshort))+"</b>. Úsalo como primer público y deja el otro para la fase 2.";
+    r.innerHTML=msg;
+  }
+  render();
+  return d;
+}
+
+function valueTool(){
+  var d=document.createElement("div"); d.style.display="flex"; d.style.flexDirection="column"; d.style.gap="10px";
+  if(!S.value) S.value=CONFIG.offers.map(function(n){ return {n:n,a:5,b:5,c:5,e:5}; });
+  var FACT=[["a","Resultado soñado ↑"],["b","Probabilidad percibida ↑"],["c","Tiempo hasta resultado ↓"],["e","Esfuerzo del cliente ↓"]];
+  S.value.forEach(function(o,i){
+    var card=document.createElement("div"); card.className="offer";
+    var h='<input type="text" value="'+esc(o.n)+'" aria-label="Nombre de la oferta">';
+    FACT.forEach(function(f){ h+='<div class="sl"><span>'+f[1]+'</span><input type="range" min="1" max="10" value="'+o[f[0]]+'" data-f="'+f[0]+'"><b>'+o[f[0]]+'</b></div>'; });
+    h+='<div>Valor: <span class="score"></span></div>';
+    card.innerHTML=h;
+    function calc(){ card.querySelector(".score").textContent=((o.a*o.b)/(o.c*o.e)).toFixed(1); }
+    card.querySelector('input[type=text]').oninput=function(e){ o.n=e.target.value; save(); };
+    card.querySelectorAll("input[type=range]").forEach(function(r){ r.oninput=function(){ o[r.dataset.f]=+r.value; r.nextElementSibling.textContent=r.value; calc(); save(); }; });
+    calc(); d.appendChild(card);
+  });
+  var n=document.createElement("div"); n.className="src"; n.textContent="Puntaje más alto = oferta más fuerte hoy. Si la mejor no es la que más te interesa, ahí hay una conversación estratégica.";
+  d.appendChild(n);
+  return d;
+}
+
+function stepEl(c,s){
+  var el=document.createElement("section"); el.className="step"+(S.done[s.id]?" done":"");
+  var h=document.createElement("div"); h.className="sh";
+  h.innerHTML='<input type="checkbox" aria-label="Marcar paso como hecho"'+(S.done[s.id]?" checked":"")+'><div><h3>'+esc(s.t)+'</h3><div class="min">'+(s.min||"")+' min</div></div>';
+  h.querySelector("input").onchange=function(e){ S.done[s.id]=e.target.checked; el.classList.toggle("done",e.target.checked); save(); overall(); updateCprog(c); };
+  el.appendChild(h);
+  if(s.body){ var b=document.createElement("div"); b.className="body"; b.innerHTML=s.body; b.querySelectorAll("[data-aud]").forEach(function(x){ x.textContent = x.dataset.aud==="A"?CONFIG.audA:CONFIG.audB; }); el.appendChild(b); }
+  if(s.wow){ var w=document.createElement("div"); w.innerHTML='<div class="wowt">'+esc(s.wow.t)+'</div><div class="wow"><div class="w"><b>Sin estructura</b>'+s.wow.weak+'</div><div class="s"><b>Con estructura</b>'+s.wow.strong+'</div></div>'; el.appendChild(w); }
+  if(s.call && s.tool==="checks"){ /* shown after checklist */ }
+  (s.prompts||[]).forEach(function(p){ el.appendChild(promptCard(p)); });
+  if(s.tool==="compare") el.appendChild(compareTool());
+  if(s.tool==="matrix") el.appendChild(matrixTool());
+  if(s.tool==="value") el.appendChild(valueTool());
+  if(s.tool==="checks"){ el.appendChild(checksBlock(s)); if(s.call){ var cl=document.createElement("div"); cl.className="call"; cl.innerHTML="<b>Línea roja:</b> "+esc(s.call); el.appendChild(cl); } }
+  if(s.q){
+    var q=document.createElement("div"); q.className="q";
+    q.innerHTML='<div class="ql">Pregunta estratégica</div><p>'+esc(s.q.text)+'</p><textarea placeholder="Escribe tu respuesta aquí"></textarea>';
+    var ta=q.querySelector("textarea"); ta.value=S.ans[s.q.id]||""; ta.oninput=function(){ S.ans[s.q.id]=ta.value; save(); };
+    el.appendChild(q);
+  }
+  return el;
+}
+var cprogEls={};
+function updateCprog(c){ var p=classProgress(c), e=cprogEls[c.id]; if(e){ e.querySelector("i").style.width=p.pct+"%"; e.querySelector("span").textContent=p.d+" de "+p.total+" pasos"; } }
+
+
+var VBASE="https://eoceqdgeptdevudoniuk.supabase.co/storage/v1/object/public/neuroclick-lupita/";
+var VIDS={"1": [["1.1", "Bienvenida", 80, "1.1_bienvenida.mp4"], ["1.2", "Tu equipo de IAs", 157, "1.2_tu_equipo_de_ias.mp4"], ["1.3", "Tu información y la IA", 131, "1.3_tu_informacion.mp4"], ["1.4", "Crea tu proyecto en Claude", 95, "1.4_crea_tu_proyecto.mp4"], ["1.5", "Rol, Contexto, Tarea y Qué NO hacer", 146, "1.5_rol_contexto_tarea.mp4"], ["1.6", "Fuentes que te inspiran", 124, "1.6_fuentes_que_te_inspiran.mp4"], ["1.7", "Háblale: tu conversación de claridad", 161, "1.7_hablale.mp4"], ["1.8", "Tu CV: primero el diagnóstico", 71, "1.8_diagnostico_cv.mp4"], ["1.9", "Tu tarea: claridad", 97, "1.9_tu_tarea.mp4"]], "2": [["2.1", "Bienvenida", 71, "2.1_bienvenida.mp4"], ["2.2", "Dos caminos en paralelo", 82, "2.2_dos_caminos.mp4"], ["2.3", "Un foco, muchas industrias", 93, "2.3_un_foco.mp4"], ["2.4", "Tu cuenta y tu privacidad", 162, "2.4_tu_cuenta.mp4"], ["2.5", "Foto profesional y portada", 195, "2.5_foto_y_portada.mp4"], ["2.6", "Claude escribe tu perfil", 73, "2.6_tu_perfil.mp4"], ["2.7", "Logros sin inventar y frase de valor", 230, "2.7_logros_y_frase_de_valor.mp4"], ["2.8", "Indeed y CalJOBS", 253, "2.8_indeed_y_caljobs.mp4"]], "3": [["3.1", "Bienvenida", 49, "3.1_bienvenida.mp4"], ["3.2", "Tu CV maestro en inglés", 90, "3.2_cv_en_ingles.mp4"], ["3.3", "Adapta tu CV a cada oferta", 98, "3.3_adapta_tu_cv.mp4"], ["3.4", "Contacto directo", 98, "3.4_contacto_directo.mp4"], ["3.5", "Mensajes y etapas de la entrevista", 155, "3.5_mensajes_y_entrevistas.mp4"], ["3.6", "Practica con la IA", 181, "3.6_practica_con_la_ia.mp4"], ["3.7", "Preguntas difíciles y tarea", 192, "3.7_preguntas_dificiles.mp4"]]};
+function mmss(t){return Math.floor(t/60)+":"+String(t%60).padStart(2,"0");}
+function vidsEl(c){
+  var box=document.createElement("div"); box.className="vids";
+  box.innerHTML='<h3>Videolecciones de la Clase '+c.n+'</h3>';
+  if(!(VIDS[c.n]||[]).length){ box.innerHTML='<h3>Clase '+c.n+' · Próximamente</h3><p class="src">Los videos y el cuaderno de esta clase estarán disponibles pronto.</p>'; return box; }
+  (VIDS[c.n]||[]).forEach(function(v){
+    var w=document.createElement("div"); w.className="vl";
+    var h=document.createElement("div"); h.className="vh"; h.setAttribute("role","button"); h.tabIndex=0; h.setAttribute("aria-expanded","false");
+    h.innerHTML='<b>'+v[0]+'</b><span>'+esc(v[1])+'</span><em>'+mmss(v[2])+'</em>';
+    var slot=document.createElement("div");
+    function tg(){var on=h.getAttribute("aria-expanded")==="true"; if(on){slot.innerHTML="";h.setAttribute("aria-expanded","false");}else{slot.innerHTML='<video controls preload="metadata" playsinline src="'+VBASE+v[3]+'"></video>';h.setAttribute("aria-expanded","true");}}
+    h.onclick=tg; h.onkeydown=function(e){if(e.key==="Enter"||e.key===" "){e.preventDefault();tg();}};
+    w.appendChild(h); w.appendChild(slot); box.appendChild(w);
+  });
+  var a=document.createElement("a"); a.className="dl"; a.target="_blank"; a.rel="noopener"; a.href=VBASE+"material/Cuaderno_Clase"+c.n+".pdf"; a.textContent="Material descargable: Cuaderno de la Clase "+c.n+" (PDF)";
+  box.appendChild(a); return box;
+}
+function renderClass(c){
+  main.innerHTML="";
+  var g=document.createElement("div"); g.className="goal";
+  g.innerHTML='<div class="tag">Clase '+c.n+' · '+esc(c.short)+'</div><h2>'+esc(c.title)+'</h2><p>'+esc(c.goal)+'</p><div class="deliv">'+esc(c.deliv)+'</div><div class="cprog"><div class="bar"><i></i></div><span></span></div>';
+  main.appendChild(g); cprogEls[c.id]=g.querySelector(".cprog"); updateCprog(c); main.appendChild(vidsEl(c));
+  c.steps.forEach(function(s){ main.appendChild(stepEl(c,s)); });
+}
+
+var MET=[["Conexiones en LinkedIn","conn"],["Postulaciones enviadas","apps"],["Mensajes directos enviados","dms"],["Respuestas recibidas","replies"],["Entrevistas","interviews"],["Ofertas","offers"]];
+function renderBoard(){
+  main.innerHTML="";
+  var g=document.createElement("div"); g.className="goal";
+  g.innerHTML='<div class="tag">Tablero</div><h2>Tus resultados, en un solo lugar</h2><p>Anota tu punto de partida hoy y vuelve el día 15 y el día 30. Con pocas semanas, mira la tendencia, no un número aislado.</p>';
+  main.appendChild(g);
+  var s=document.createElement("section"); s.className="step";
+  var h='<div class="tblw"><table><tr><th>Métrica</th><th>Día 0</th><th>Día 15</th><th>Día 30</th><th>Cambio</th></tr>';
+  MET.forEach(function(m){
+    var v=S.metrics[m[1]]||{};
+    h+='<tr><td>'+esc(m[0])+'</td>'+["d0","d15","d30"].map(function(k){ return '<td><input type="number" inputmode="numeric" data-m="'+m[1]+'" data-k="'+k+'" value="'+esc(v[k]===undefined?"":v[k])+'"></td>'; }).join("")+'<td data-delta="'+m[1]+'"></td></tr>';
+  });
+  s.innerHTML=h+'</table></div>';
+  function deltas(){
+    MET.forEach(function(m){
+      var v=S.metrics[m[1]]||{}, cell=s.querySelector('[data-delta="'+m[1]+'"]'), last=v.d30!==""&&v.d30!==undefined?v.d30:(v.d15!==""&&v.d15!==undefined?v.d15:null);
+      if(v.d0===undefined||v.d0===""||last===null){ cell.textContent="–"; return; }
+      var df=+last-+v.d0; cell.textContent=(df>0?"+":"")+df;
+      cell.style.color=df>0?"var(--ok)":df<0?"var(--bad)":"var(--muted)"; cell.style.fontWeight=600;
+    });
+  }
+  s.querySelectorAll("input").forEach(function(el){ el.oninput=function(){ var m=el.dataset.m; S.metrics[m]=S.metrics[m]||{}; S.metrics[m][el.dataset.k]=el.value; save(); deltas(); }; });
+  deltas();
+  var ex=document.createElement("div"); ex.innerHTML='<div class="row"><button type="button" class="btn">Copiar resumen</button><span class="src">Pégalo en Claude o compártelo en nuestro próximo encuentro.</span></div><pre id="sumpre" style="white-space:pre-wrap;word-break:break-word;font-family:\'JetBrains Mono\',monospace;font-size:12.5px;background:var(--code);padding:12px;border-radius:8px;margin:10px 0 0" hidden></pre>';
+  s.appendChild(ex); main.appendChild(s);
+  var btn=ex.querySelector("button"), pre=ex.querySelector("pre");
+  btn.onclick=function(){ var t=summary(); pre.textContent=t; pre.hidden=false; copyText(t, pre, btn); };
+}
+function summary(){
+  var L=[]; L.push("PROGRAM SUMMARY · "+CONFIG.name+" · "+CONFIG.business);
+  L.push("Progress: "+document.getElementById("ovp").textContent);
+  L.push(""); L.push("METRICS (day 0 / day 15 / day 30)");
+  MET.forEach(function(m){ var v=S.metrics[m[1]]||{}; L.push("- "+m[0]+": "+(v.d0||"-")+" / "+(v.d15||"-")+" / "+(v.d30||"-")); });
+  var sa=0,sb=0,filled=0; CRIT.forEach(function(c,i){ sa+=+S.matrix["A"+i]||0; sb+=+S.matrix["B"+i]||0; if(S.matrix["A"+i]) filled++; });
+  if(filled){ L.push(""); L.push("AUDIENCE MATRIX: A ("+CONFIG.audAshort+") = "+sa+" · B ("+CONFIG.audBshort+") = "+sb); }
+  if(S.value){ L.push(""); L.push("VALUE EQUATION"); S.value.forEach(function(o){ L.push("- "+o.n+": dream "+o.a+", likelihood "+o.b+", time "+o.c+", effort "+o.e+" => "+((o.a*o.b)/(o.c*o.e)).toFixed(1)); }); }
+  var qs=[]; CLASSES.forEach(function(c){ c.steps.forEach(function(s){ if(s.q&&S.ans[s.q.id]) qs.push("- "+s.q.text+"\n  "+S.ans[s.q.id]); }); });
+  if(qs.length){ L.push(""); L.push("MY ANSWERS"); L=L.concat(qs); }
+  return L.join("\n");
+}
+
+function route(){
+  var id=(location.hash||"").replace("#","");
+  var v=VIEWS.filter(function(x){return x.id===id;})[0] || VIEWS[0];
+  tabsEl.querySelectorAll("button").forEach(function(b){ b.setAttribute("aria-selected", b.dataset.id===v.id?"true":"false"); });
+  if(v.id==="tablero") renderBoard(); else renderClass(CLASSES.filter(function(c){return c.id===v.id;})[0]);
+  overall();
+}
+window.addEventListener("hashchange", function(){ route(); window.scrollTo(0,0); });
+route();
+</script>
+</body></html>

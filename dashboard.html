@@ -362,6 +362,16 @@ function renderDashboard(estudiante) {
     return;
   }
 
+  if (programa === 'lupita') {
+    document.getElementById('contenidoMain').innerHTML = `
+      <div class="locked-section" style="border-left:5px solid #0e5a8a;text-align:left">
+        <h2>Tu programa de 4 clases</h2>
+        <p>Videolecciones, prompts listos para copiar, cuadernos descargables y tu tablero de avance, todo en un solo lugar.</p>
+        <p style="margin-top:18px"><a href="/programa-lupita.html" class="payment-btn" style="display:inline-block">Abrir mi programa →</a></p>
+      </div>`;
+    return;
+  }
+
   document.getElementById('contenidoMain').innerHTML = `
     <div class="section-title">📚 Tus Clases — ${label}</div>
     <div class="clases-grid">${renderClases(programa)}</div>
